@@ -15,3 +15,15 @@ def count_good_values(grid, solution):
     print (eq_values)
     print(count)
     return count  count_good_values(puzzle, solution)
+
+def manhattan_dist(x1, y1, x2, y2):
+    return np.abs(x2 - x1) + np.abs(y2 - y1)
+
+def sq_euclidian_dist(x1, y1, x2, y2):
+    return (x2 - x1)**2 + (y2 - y1)**2   
+
+
+
+count_good_values(puzzle, solution)
+print (sq_euclidian_dist(1,1,3,3))
+print (manhattan_dist(1,1,3,3))
