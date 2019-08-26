@@ -7,7 +7,7 @@ import numpy as np
 
 
 def init(filename):
-    x = y = 0
+    y = 0
     puzzle = Puzzle()
     puzzle.state = np.array([], int)
 
@@ -21,7 +21,7 @@ def init(filename):
             split = line.split("#")
             if puzzle.size == 0 and len(split) == 1:
                 puzzle.size = int(split[0])
-                puzzle.solution = np.zeros((puzzle.size, puzzle.size), dtype = int)
+                puzzle.solution = np.zeros((puzzle.size, puzzle.size), dtype=int)
             else:
                 elems = split[0].split()
                 print(elems)
