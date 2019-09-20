@@ -1,5 +1,5 @@
 import numpy as np
-import Puzzle from puzzle_class
+from puzzle_class import Puzzle
 
 class Solver:
 

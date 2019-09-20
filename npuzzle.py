@@ -1,10 +1,9 @@
-#!/Users/srossi/Documents/venv/bin/python3.7
-# -*- coding: utf-8 -*-
+
 
 import argparse
 from puzzle_class import Puzzle
 import numpy as np
-
+from test import test_movements
 
 def init(filename):
     y = 0
@@ -28,7 +27,6 @@ def init(filename):
                 puzzle.state = np.concatenate((puzzle.state, elems), axis=None)
                 if len(elems) == puzzle.size and puzzle.size != 0:
                     y += 1
-        # print(puzzle.state)
         return puzzle
 
 def main():
@@ -36,15 +34,18 @@ def main():
     parser.add_argument("file", help="Puzzle file (.txt)")
     arg = parser.parse_args()
     print(arg.file)
-
     #Ouverture du fichier et creation du puzzle initiale
     puzzle = init(arg.file)
-    print("puzzle.state : ", puzzle.state)
-    print("puzzle.size : ", puzzle.size)
+    print("")
+    puzzle.print()
     # print(puzzle.size)
     puzzle.get_solution()
+    #zero_position = puzzle.get_position('0')
+    #print("zero position :", zero_position)
+    #test_movements(puzzle)
 
     #parse file => objet puzzle
+
     #puzzle.solve
     #puzzle.print_solutions
 
