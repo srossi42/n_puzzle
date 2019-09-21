@@ -7,114 +7,162 @@ class Puzzle:
     h = 0
     parent = None
     size = 0
+    zero_position = None
+
  #   moves = ["move_up", "move_down", "move_left", "move_right"]
 
     def __init__(self, parent=None):
         if parent:
             self.parent = parent
             self.g = parent.g + 1
-    def print (self):
+
+    def print(self):
+        space_max = len(str(self.size ** 2))
         i = 0
         for elem in self.state:
             if (i % self.size == 0 and i != 0):
                 print("")
-            print(elem + " ", end="")
+            print( " " * (space_max - len(str(elem))) + str(elem) + " ", end="")
             i += 1
         print("")
 
-    def move(self, value, direction):
-        index_value = np.where(self.state == value)[0][0]
-        position_value = self.get_position(value)
-        x = position_value[0]
-        y = position_value[1]
-        if direction == "up":
-            print(direction)
-        elif direction == "down":
-            print(direction)
-        elif direction == "left":
-            print(direction)
-        elif direction == "right":
-            print(direction)
-        else:
-            print("Error, wrong direction:", direction)
-            return -1
-        return 1
-
     def move_right(self, value):
         print("move right ", value)
-        index_value = np.where(self.state == value)[0][0]
         position_value = self.get_position(value)
-        x = position_value[0]
-        y = position_value[1]
+        y = position_value[0]
+        x = position_value[1]
         if x >= (self.size - 1):
             print("Error: can't move right: value position = [" + str(x) + ";" + str(y) + "]" )
+            print(self.state)
             return -1
-        righter_value = self.state[index_value + 1]
-        self.state[index_value + 1] = value
-        self.state[index_value] = righter_value
+        righter_value = self.state[y, x + 1]
+        self.state[y, x + 1] = value
+        self.state[y, x] = righter_value
+        print(self.state)
         return 0
 
     def move_left(self, value):
         print("move left ", value)
-        index_value = np.where(self.state == value)[0][0]
         position_value = self.get_position(value)
-        x = position_value[0]
-        y = position_value[1]
+        y = position_value[0]
+        x = position_value[1]
         if x <= 0:
             print("Error: can't move left: value position = [" + str(x) + ";" + str(y) + "]" )
+            print(self.state)
             return -1
-        lefter_value = self.state[index_value - 1]
-        self.state[index_value - 1] = value
-        self.state[index_value] = lefter_value
+        lefter_value = self.state[y, x - 1]
+        self.state[y, x - 1] = value
+        self.state[y, x] = lefter_value
+        print(self.state)
         return 0
 
     def move_up(self, value):
         print("move up ", value)
-        index_value = np.where(self.state == value)[0][0]
         position_value = self.get_position(value)
-        x = position_value[0]
-        y = position_value[1]
-        if y == 0:
+        y = position_value[0]
+        x = position_value[1]
+        if y <= 0:
             print("Error: can't move up: value position = [" + str(x) + ";" + str(y) + "]" )
+            print(self.state)
             return -1
-        upper_value = self.state[index_value - self.size]
-        self.state[index_value - self.size] = value
-        self.state[index_value] = upper_value
+        upper_value = self.state[y - 1, x]
+        print("upper value : ", upper_value)
+        self.state[y - 1, x] = value
+        self.state[y, x] = upper_value
+        print(self.state)
         return 0
 
     def move_down(self, value):
         print("move down ", value)
-        index_value = np.where(self.state == value)[0][0]
         position_value = self.get_position(value)
-        x = position_value[0]
-        y = position_value[1]
-        if y == (self.size - 1):
+        y = position_value[0]
+        x = position_value[1]
+        if y >= (self.size - 1):
             print("Error: can't move down: value position = [" + str(x) + ";" + str(y) + "]" )
+            print(self.state)
             return -1
-        lower_value = self.state[index_value + self.size]
-        self.state[index_value + self.size] = value
-        self.state[index_value] = lower_value
+        lower_value = self.state[y + 1, x]
+        self.state[y + 1, x] = value
+        self.state[y, x] = lower_value
+        print(self.state)
         return 0
 
     def get_position(self, value):
-        x = int(np.trunc(np.where(self.state == value)[0][0] % self.size))
-        y = int(np.trunc(np.where(self.state == value)[0][0] / self.size))
-        return x, y
+        #print("position : ", np.where(self.state == value))
+        y = int(np.where(self.state == value)[0])
+        x = int(np.where(self.state == value)[1])
+        #print ("get pos y, x :", y, x)
+        return y, x
 
-    def get_available_moves(self):
+    def get_available_moves(self, value):
         available_moves = []
-        blank_position = self.get_position(0)
-        if blank_position[0] > 0:
+        value_position = self.get_position(value)
+        print("value position  : ", value_position)
+        if value_position[1] > 0:
             available_moves.append({"mv_left": self.move_left})
-        if blank_position[0] < (self.size - 1):
+        if value_position[1] < (self.size - 1):
             available_moves.append({"mv_right": self.move_right})
-        if blank_position[1] > 0:
+        if value_position[0] > 0:
             available_moves.append({"mv_up": self.move_up})
-        if blank_position[1] < (self.size - 1):
+        if value_position[0] < (self.size - 1):
             available_moves.append({"mv_down": self.move_down})
         return available_moves
 
-# A STAR ALGO
-
-    def get_solution(self):
-        return 1
+    def get_solution(self, size):
+        solution = np.zeros((size, size), dtype=int)
+        #solution = [0] * (size*size)
+        value_max = size ** 2
+        value = 1
+        x_max = y_max = size - 1
+        x_min = y_min = 0
+        print("max value : ", value_max)
+        while 1:
+            x = x_min
+            y = y_min
+            while x < x_max:
+                #print("value : ", value)
+                #print(str(x) + ", " + str(y))
+                solution[y, x] = value
+                x += 1
+                y = y_min
+                #print("solution : ", solution)
+                value += 1
+            if value >= value_max:
+                break
+            while y < y_max:
+                #print(value)
+                #print(str(x) + ", " + str(y))
+                solution[y, x] = value
+                y += 1
+               # print("solution : ", solution)
+                value += 1
+            if value >= value_max:
+                break
+            while x > x_min:
+                #print(value)
+                #print(str(x) + ", " + str(y))
+                solution[y, x] = value
+                x -= 1
+                #print("solution : ", solution)
+                value += 1
+            if value >= value_max:
+                break
+            while y > y_min:
+                #print(value)
+                #print(str(x) + ", " + str(y))
+                solution[y, x] = value
+                y -= 1
+                #print("solution : ", solution)
+                value += 1
+            x_min += 1
+            y_min += 1
+            y_max -= 1
+            x_max -= 1
+            if value >= value_max:
+                break
+        #print(str(x) + ", " + str(y))
+        #print("----")
+        #print(str(x_min) + ", " + str(y_min))
+        #print(str(x_max) + ", " + str(y_max))
+        #print("soution : ", solution)
+        return solution

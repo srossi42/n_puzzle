@@ -1,11 +1,13 @@
 
 
 import argparse
-from puzzle_class import Puzzle
 import numpy as np
+from puzzle_class import Puzzle
+from solver_class import Solver
 from test import test_movements
+from puzzle_gen import generate_puzzle
 
-def init(filename):
+def create_from_file(filename):
     y = 0
     puzzle = Puzzle()
     puzzle.state = np.array([], int)
@@ -35,11 +37,18 @@ def main():
     arg = parser.parse_args()
     print(arg.file)
     #Ouverture du fichier et creation du puzzle initiale
-    puzzle = init(arg.file)
+    puzzle = create_from_file(arg.file)
     print("")
     puzzle.print()
+
+
+    puzzle_solved = generate_puzzle(5, 10)
+
     # print(puzzle.size)
-    puzzle.get_solution()
+    #print(puzzle.get_solution())
+
+    #test_sol = generate_puzzle(3, 10)
+    #print(test_sol)
     #zero_position = puzzle.get_position('0')
     #print("zero position :", zero_position)
     #test_movements(puzzle)

@@ -10,6 +10,11 @@ class Solver:
     nb_opened = 0
     nb_max_opened = 0
 
+#    def __init__(self, size, first_node):
+ #       self.size = size
+  #      self.get_solution()
+  #      self.opened.append(first_node)
+
     def __init__(self, size, first_node):
         self.size = size
         self.get_solution()
@@ -27,12 +32,12 @@ class Solver:
             x = x_min
             y = y_min
             while x < x_max:
-                print(value)
+                print("value : ", value)
                 print(str(x) + ", " + str(y))
-                self.solution[y,x] = value
+                self.solution[y, x] = value
                 x += 1
                 y = y_min
-                print(self.solution)
+                print("solution : ", self.solution)
                 value += 1
             if value >= value_max:
                 break
@@ -73,6 +78,8 @@ class Solver:
         print(str(x_max) + ", " + str(y_max))
         print(self.solution)
 
-    def a_star(self):
+# A STAR ALGO
 
+    def get_solution(self):
+        print("A star algo not done")
         return 1
