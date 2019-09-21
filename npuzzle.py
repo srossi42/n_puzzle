@@ -36,11 +36,12 @@ def main():
     parser.add_argument("file", help="Puzzle file (.txt)")
     arg = parser.parse_args()
     print(arg.file)
-    #Ouverture du fichier et creation du puzzle initiale
+#Ouverture du fichier et creation du puzzle initiale
     puzzle = create_from_file(arg.file)
     print("")
     puzzle.print()
 
+ #GENERATION PUZZLE
     puzzle_gen = Generator(5, 1000)
     new_puzzle = puzzle_gen.generate_puzzle()
     print("new : ")

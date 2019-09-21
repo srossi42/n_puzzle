@@ -9,12 +9,12 @@ class Puzzle:
     parent = None
     size = 0
     zero_position = None
-    verbose = 1
-    debug = 1
+    verbose = 10
+    debug = 0
+    tempo = 0
+    sys = None
 
- #   moves = ["move_up", "move_down", "move_left", "move_right"]
-
-    def __init__(self, parent=None, verbose=0, debug=0):
+    def __init__(self, parent=None, verbose=0, debug=0, sys="unix"):
         if parent:
             self.parent = parent
             self.g = parent.g + 1
@@ -33,8 +33,18 @@ class Puzzle:
             i += 1
         print("")
 
+    def get_move_function(self, move):
+        if move == "mv_left":
+            return {"mv_left": self.move_left}
+        if move == "mv_right":
+            return {"mv_right": self.move_right}
+        if move == "mv_up":
+            return {"mv_up": self.move_up}
+        if move == "mv_down":
+            return {"mv_down": self.move_down}
+
     def move_right(self, value):
-        if self.verbose == 1:
+        if self.debug == 1:
             print("move right ", value)
         position_value = self.get_position(value)
         y = position_value[0]
@@ -48,13 +58,16 @@ class Puzzle:
         self.state[y, x + 1] = value
         self.state[y, x] = righter_value
         if self.verbose == 1:
-            time.sleep(1)
-            os.system("cls")
+            time.sleep(self.tempo)
+            if self.sys == 'unix':
+                os.system("clear")
+            else:
+                os.system("cls")
             print(self.state)
         return 0
 
     def move_left(self, value):
-        if self.verbose == 1:
+        if self.debug == 1:
             print("move left ", value)
         position_value = self.get_position(value)
         y = position_value[0]
@@ -68,13 +81,16 @@ class Puzzle:
         self.state[y, x - 1] = value
         self.state[y, x] = lefter_value
         if self.verbose == 1:
-            time.sleep(1)
-            os.system("cls")
+            time.sleep(self.tempo)
+            if self.os == 'unix':
+                os.system("clear")
+            else:
+                os.system("cls")
             print(self.state)
         return 0
 
     def move_up(self, value):
-        if self.verbose == 1:
+        if self.debug == 1:
             print("move up ", value)
         position_value = self.get_position(value)
         y = position_value[0]
@@ -88,13 +104,16 @@ class Puzzle:
         self.state[y - 1, x] = value
         self.state[y, x] = upper_value
         if self.verbose == 1:
-            time.sleep(1)
-            os.system("cls")
+            time.sleep(self.tempo)
+            if self.os == 'unix':
+                os.system("clear")
+            else:
+                os.system("cls")
             print(self.state)
         return 0
 
     def move_down(self, value):
-        if self.verbose == 1:
+        if self.debug == 1:
             print("move down ", value)
         position_value = self.get_position(value)
         y = position_value[0]
@@ -108,8 +127,11 @@ class Puzzle:
         self.state[y + 1, x] = value
         self.state[y, x] = lower_value
         if self.verbose == 1:
-            time.sleep(1)
-            os.system("cls")
+            time.sleep(self.tempo)
+            if self.os == 'unix':
+                os.system("clear")
+            else:
+                os.system("cls")
             print(self.state)
         return 0
 
@@ -127,7 +149,7 @@ class Puzzle:
     def get_available_moves(self, value):
         available_moves = []
         value_position = self.get_position(value)
-        if self.verbose == 1:
+        if self.debug == 1:
             print("value position  : ", value_position)
         if value_position[1] > 0:
             available_moves.append({"mv_left": self.move_left})
