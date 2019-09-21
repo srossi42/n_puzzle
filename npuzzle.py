@@ -5,7 +5,7 @@ import numpy as np
 from puzzle_class import Puzzle
 from solver_class import Solver
 from test import test_movements
-from puzzle_gen import generate_puzzle
+from puzzle_gen import Generator
 
 def create_from_file(filename):
     y = 0
@@ -41,8 +41,11 @@ def main():
     print("")
     puzzle.print()
 
-
-    puzzle_solved = generate_puzzle(5, 10)
+    puzzle_gen = Generator(5, 1000)
+    new_puzzle = puzzle_gen.generate_puzzle()
+    print("new : ")
+    print (new_puzzle.state)
+    #puzzle_solved = generate_puzzle(5, 1000)
 
     # print(puzzle.size)
     #print(puzzle.get_solution())

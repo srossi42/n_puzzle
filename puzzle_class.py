@@ -1,5 +1,6 @@
 import numpy as np
-
+import os
+import time
 class Puzzle:
 
     state = None
@@ -8,13 +9,19 @@ class Puzzle:
     parent = None
     size = 0
     zero_position = None
+    verbose = 1
+    debug = 1
 
  #   moves = ["move_up", "move_down", "move_left", "move_right"]
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, verbose=0, debug=0):
         if parent:
             self.parent = parent
             self.g = parent.g + 1
+        if verbose:
+            self.verbose = verbose
+        if debug:
+            self.debug = debug
 
     def print(self):
         space_max = len(str(self.size ** 2))
@@ -27,77 +34,101 @@ class Puzzle:
         print("")
 
     def move_right(self, value):
-        print("move right ", value)
+        if self.verbose == 1:
+            print("move right ", value)
         position_value = self.get_position(value)
         y = position_value[0]
         x = position_value[1]
         if x >= (self.size - 1):
-            print("Error: can't move right: value position = [" + str(x) + ";" + str(y) + "]" )
-            print(self.state)
+            if self.debug == 1:
+                print("Error: can't move right: value position = [" + str(x) + ";" + str(y) + "]" )
+                print(self.state)
             return -1
         righter_value = self.state[y, x + 1]
         self.state[y, x + 1] = value
         self.state[y, x] = righter_value
-        print(self.state)
+        if self.verbose == 1:
+            time.sleep(1)
+            os.system("cls")
+            print(self.state)
         return 0
 
     def move_left(self, value):
-        print("move left ", value)
+        if self.verbose == 1:
+            print("move left ", value)
         position_value = self.get_position(value)
         y = position_value[0]
         x = position_value[1]
         if x <= 0:
-            print("Error: can't move left: value position = [" + str(x) + ";" + str(y) + "]" )
-            print(self.state)
+            if self.debug == 1:
+                print("Error: can't move left: value position = [" + str(x) + ";" + str(y) + "]" )
+                print(self.state)
             return -1
         lefter_value = self.state[y, x - 1]
         self.state[y, x - 1] = value
         self.state[y, x] = lefter_value
-        print(self.state)
+        if self.verbose == 1:
+            time.sleep(1)
+            os.system("cls")
+            print(self.state)
         return 0
 
     def move_up(self, value):
-        print("move up ", value)
+        if self.verbose == 1:
+            print("move up ", value)
         position_value = self.get_position(value)
         y = position_value[0]
         x = position_value[1]
         if y <= 0:
-            print("Error: can't move up: value position = [" + str(x) + ";" + str(y) + "]" )
-            print(self.state)
+            if self.debug == 1:
+                print("Error: can't move up: value position = [" + str(x) + ";" + str(y) + "]" )
+                print(self.state)
             return -1
         upper_value = self.state[y - 1, x]
-        print("upper value : ", upper_value)
         self.state[y - 1, x] = value
         self.state[y, x] = upper_value
-        print(self.state)
+        if self.verbose == 1:
+            time.sleep(1)
+            os.system("cls")
+            print(self.state)
         return 0
 
     def move_down(self, value):
-        print("move down ", value)
+        if self.verbose == 1:
+            print("move down ", value)
         position_value = self.get_position(value)
         y = position_value[0]
         x = position_value[1]
         if y >= (self.size - 1):
-            print("Error: can't move down: value position = [" + str(x) + ";" + str(y) + "]" )
-            print(self.state)
+            if self.debug == 1:
+                print("Error: can't move down: value position = [" + str(x) + ";" + str(y) + "]" )
+                print(self.state)
             return -1
         lower_value = self.state[y + 1, x]
         self.state[y + 1, x] = value
         self.state[y, x] = lower_value
-        print(self.state)
+        if self.verbose == 1:
+            time.sleep(1)
+            os.system("cls")
+            print(self.state)
         return 0
 
     def get_position(self, value):
-        #print("position : ", np.where(self.state == value))
+        if self.state is None:
+            print("Error: puzzle state does not exist")
+            return -1
+        if self.debug == 1:
+            print("value in get position : ", value)
+            print("self.state :" , self.state)
         y = int(np.where(self.state == value)[0])
         x = int(np.where(self.state == value)[1])
-        #print ("get pos y, x :", y, x)
         return y, x
 
     def get_available_moves(self, value):
         available_moves = []
         value_position = self.get_position(value)
-        print("value position  : ", value_position)
+        if self.verbose == 1:
+            print("value position  : ", value_position)
         if value_position[1] > 0:
             available_moves.append({"mv_left": self.move_left})
         if value_position[1] < (self.size - 1):
@@ -115,7 +146,7 @@ class Puzzle:
         value = 1
         x_max = y_max = size - 1
         x_min = y_min = 0
-        print("max value : ", value_max)
+        #print("max value : ", value_max)
         while 1:
             x = x_min
             y = y_min
