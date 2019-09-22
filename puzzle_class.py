@@ -9,12 +9,12 @@ class Puzzle:
     parent = None
     size = 0
     zero_position = None
-    verbose = 10
-    debug = 0
+    verbose = False
+    debug = False
     tempo = 0
     sys = None
 
-    def __init__(self, parent=None, verbose=0, debug=0, sys="unix"):
+    def __init__(self, parent=None, verbose=False, debug=False, sys="unix"):
         if parent:
             self.parent = parent
             self.g = parent.g + 1
@@ -161,12 +161,13 @@ class Puzzle:
             available_moves.append({"mv_down": self.move_down})
         return available_moves
 
-    def get_solution(self, size):
-        solution = np.zeros((size, size), dtype=int)
+    def get_solution(self):
+        print("self size : ", self.size)
+        solution = np.zeros((self.size, self.size), dtype=int)
         #solution = [0] * (size*size)
-        value_max = size ** 2
+        value_max = self.size ** 2
         value = 1
-        x_max = y_max = size - 1
+        x_max = y_max = self.size - 1
         x_min = y_min = 0
         #print("max value : ", value_max)
         while 1:

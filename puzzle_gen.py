@@ -10,11 +10,11 @@ class Generator:
 
     puzzle = None
     nb_moves = 0
-    verbose = 0
-    debug = 0
+    verbose = False
+    debug = False
     last_move = None
 
-    def __init__(self, size, nb_moves, verbose = 0, debug = 0):
+    def __init__(self, size, nb_moves, verbose=False, debug=False):
         self.puzzle = Puzzle()
         self.puzzle.size = size
         self.nb_moves = nb_moves
@@ -63,9 +63,8 @@ class Generator:
         return self.puzzle
 
     def generate_puzzle(self):
-        solved_puzzle = self.puzzle.get_solution(self.puzzle.size)
+        solved_puzzle = self.puzzle.get_solution()
         print("solution of generator : ")
-        print (solved_puzzle)
         self.puzzle.state = solved_puzzle
         shuffled_puzzle = self.shuffle()
         print("shuffle : ")
