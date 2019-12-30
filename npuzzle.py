@@ -46,21 +46,8 @@ def main():
     new_puzzle = puzzle_gen.generate_puzzle()
     print("new : ")
     print (new_puzzle.state)
-    #puzzle_solved = generate_puzzle(5, 1000)
 
-    # print(puzzle.size)
-    #print(puzzle.get_solution())
 
-    #test_sol = generate_puzzle(3, 10)
-    #print(test_sol)
-    #zero_position = puzzle.get_position('0')
-    #print("zero position :", zero_position)
-    #test_movements(puzzle)
-
-    #parse file => objet puzzle
-
-    #puzzle.solve
-    #puzzle.print_solutions
 
 if __name__ == '__main__':
     main()
