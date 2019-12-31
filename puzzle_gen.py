@@ -49,17 +49,14 @@ class Generator:
                     availables_moves.remove(opposite_move)
             if self.debug == 1:
                 print("Available moves are : ", )
-                print ("  ", end = "")
-                for i in range(0, len(availables_moves)):
-                    for move in availables_moves[i]:
-                        print (move, end=" ")
+                for move in availables_moves:
+                    print ("  Name : " + move['name'] + " - Function : " + str(move['function']))
                 print ("")
-            random_move = random.choice (availables_moves)
+            random_move = random.choice(availables_moves)
+            if self.debug == 1:
+                print("chosen move is : ", random_move['name'])
+            random_move['function'](0)
             self.last_move = random_move
-            for name, function in random_move.items():
-                if self.debug == 1:
-                    print ("chosen move is : ", name)
-                function(0)
         return self.puzzle
 
     def generate_puzzle(self):

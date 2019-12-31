@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import time
+
 class Puzzle:
 
     state = None
@@ -43,6 +44,12 @@ class Puzzle:
         if move == "mv_down":
             return {"mv_down": self.move_down}
 
+    def get_state(self):
+        return self.state
+
+    # movements functions => retourner un nouveau state et l'affecter dans le main a puzzle.state
+    # plutot que de mov direct et sauver dans move_function
+    # get children a modifier aussi ensuite, pas besoin de backup
     def move_right(self, value):
         if self.debug == 1:
             print("move right ", value)
@@ -152,13 +159,13 @@ class Puzzle:
         if self.debug == 1:
             print("value position  : ", value_position)
         if value_position[1] > 0:
-            available_moves.append({"mv_left": self.move_left})
+            available_moves.append({'name': "mv_left", 'function': self.move_left})
         if value_position[1] < (self.size - 1):
-            available_moves.append({"mv_right": self.move_right})
+            available_moves.append({'name': "mv_right", 'function': self.move_right})
         if value_position[0] > 0:
-            available_moves.append({"mv_up": self.move_up})
+            available_moves.append({'name': "mv_up", 'function': self.move_up})
         if value_position[0] < (self.size - 1):
-            available_moves.append({"mv_down": self.move_down})
+            available_moves.append({'name': "mv_down", 'function': self.move_down})
         return available_moves
 
     def get_solution(self):
@@ -223,3 +230,15 @@ class Puzzle:
         #print(str(x_max) + ", " + str(y_max))
         #print("soution : ", solution)
         return solution
+
+    def get_children(self):
+        backup_state = self.state.copy()
+        children_list = []
+        availables_moves = self.get_available_moves(0)
+        # print("availables_moves dans get children: ", availables_moves)
+        for move in availables_moves:
+            move['function'](0)
+            # print(self.state)
+            children_list.append(self.state)
+            self.state = backup_state.copy()
+        return children_list
