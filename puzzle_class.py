@@ -23,6 +23,7 @@ class Puzzle:
             self.verbose = verbose
         if debug:
             self.debug = debug
+        self.sys = sys
 
     def print(self):
         space_max = len(str(self.size ** 2))
@@ -156,6 +157,9 @@ class Puzzle:
     def get_available_moves(self, value):
         available_moves = []
         value_position = self.get_position(value)
+        # print("value : ", value)
+        # print("position : ", value_position)
+        # print("self.size : ", self.size)
         if self.debug == 1:
             print("value position  : ", value_position)
         if value_position[1] > 0:
@@ -169,7 +173,7 @@ class Puzzle:
         return available_moves
 
     def get_solution(self):
-        print("self size : ", self.size)
+        # print("self size : ", self.size)
         if self.size == 0:
             print("Puzzle size is 0. No solution can be found")
             exit(-1)
@@ -232,13 +236,19 @@ class Puzzle:
         return solution
 
     def get_children(self):
+        # print("get_children function")
         backup_state = self.state.copy()
         children_list = []
         availables_moves = self.get_available_moves(0)
-        # print("availables_moves dans get children: ", availables_moves)
+        # print("availables_moves dans get children: ")
+        # for move in availables_moves:
+        #     print(move['name'])
         for move in availables_moves:
+            # on deplace le 0 => self.state est affecte par le deplacement
             move['function'](0)
-            # print(self.state)
-            children_list.append(self.state)
+            # si pas de parent ou si le parent est different de l'etat courant on ajoute child
+            if not self.parent or not np.array_equal(self.state, self.parent.state):
+                # print("Adding child")
+                children_list.append(self.state)
             self.state = backup_state.copy()
         return children_list
