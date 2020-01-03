@@ -1,5 +1,7 @@
 import numpy as np
 from puzzle_class import Puzzle
+import heuristics
+from heapq import heappush, heappop
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
@@ -8,13 +10,16 @@ O  = '\033[33m' # orange
 B  = '\033[34m' # blue
 P  = '\033[35m' # purple
 
+
 class Solver:
 
     solution = None
+    heuristic = None
     size = 0
     opened = []
     closed = []
     closed_sets = set()
+    count_open = 0
     nb_opened = 0
     nb_max_opened = 0
     verbose = False
@@ -39,27 +44,19 @@ class Solver:
         return False
 
     def add_closed(self, puzzle):
-            if not self.closed:
-                # self.closed_setstuple(map(tuple, puzzle.state))
-                self.closed = [puzzle]
-            else:
-                self.closed.append(puzzle)
-            self.closed_sets.add(tuple(map(tuple, puzzle.state)))
+        if not self.closed:
+            # self.closed_setstuple(map(tuple, puzzle.state))
+            self.closed = [puzzle]
+        else:
+            self.closed.append(puzzle)
+        self.closed_sets.add(tuple(map(tuple, puzzle.state)))
 
     def add_opened(self, puzzle):
-        # print("avant : ")
-        # print(self.opened)
-        if not self.opened:
-            self.opened = [puzzle]
-        else:
-            self.opened.append(puzzle)
-        # print("apres : ")
-        # print(self.opened)
+        heappush(self.opened, puzzle)
+        self.count_open += 1
 
     def remove_opened(self, puzzle):
-        for node in self.opened:
-            if np.array_equal(node.state, puzzle.state):
-                self.opened.remove(node)
+        heappop(self.opened)
 
     def get_index(self, puzzles_list, puzzle):
         for i in range(0, puzzles_list.lenght()):
@@ -76,95 +73,79 @@ class Solver:
                 best_puzzle = node
         return best_puzzle
 
-
-    # def is_closed:
-    #     states_array = map(lambda x: x.state, array)
-    #     for state in states_array:
-    #         if node.state in states_array:
-    #             return True
-    #     return False
-
     def update_closed_puzzle(self, new_puzzle):
         index = self.get_index(self.closed, new_puzzle)
         self.closed[index].parent = new_puzzle.parent
         self.closed[index].g = new_puzzle.g
 
     # a modifier avec les heap
-    def is_opened(self, state):
-        if self.opened:
-            opened_states = map(lambda x: x, self.opened)
-            for open_state in opened_states:
-                if np.array_equal(open_state,  state):
-                    return True
-        return False
+    def is_opened(self, puzzle):
+        return puzzle in self.opened
 
     def is_closed(self, state):
         state_set = tuple(map(tuple, state))
         return state_set in self.closed_sets
 
+    def set_heuristic(self, heuristic_number):
+        self.heuristic = heuristics.get_heuristic(heuristic_number)
+        print("heuristic set : ", self.heuristic)
+
 
     # A* ALGO
-    def find_path(self, heuristic=None):
-        if heuristic is None:
-            print("Error: heuristic function needs to be specify")
-            exit()
-        else:
-            print("heuristic : ", heuristic)
-        #     find heuristic
+    def find_path(self, heuristic_number=None):
+        if heuristic_number is None:
+            raise Exception("Error: heuristic function needs to be specify")
+        self.set_heuristic(heuristic_number)
         success = False
         while self.opened is None or len(self.opened) > 0 and not success:
-            curr_node = self.get_best_opened()
-            # print(R+"current node : "+W)
-            # print(curr_node.state)
-            #  a changer par if node.h == 0 quand heuristics implementees
+            # curr_node = self.get_best_opened()
+            # for node in self.opened:
+            #     print("node.h : ", node.h)
+            # if len(self.opened) >= 10:
+            #     exit()
+            curr_node = heappop(self.opened)
+            print("chosen node H : ", curr_node.h)
             if self.is_final(curr_node.state):
-                print("curr_node is solution !")
-                print(curr_node.state)
                 success = True
             else:
-                # print("node going from opened to closed")
-                self.remove_opened(curr_node)
+                # self.remove_opened(curr_node)
                 self.add_closed(curr_node)
+                if curr_node.parent is None:
+                    curr_node.h = heuristics.calc_heuristic(self.heuristic, self.size, curr_node, self.solution)
+                    print("H : ", curr_node.h)
                 children_states = curr_node.get_children()
-                # print(G+'children_states : '+W)
-                # print(children_states)
                 for child_state in children_states:
-                    # print("child : ")
-                    # print(child_state)
-                    is_opened = self.is_opened(child_state)
-                    is_closed = self.is_closed(child_state)
-                    child = Puzzle()
+                    child = Puzzle(parent=curr_node)
                     child.state = child_state
-                    child.parent = curr_node
-                    child.size = curr_node.size
+                    child.zero_position = child.get_position(0)
+                    is_opened = self.is_opened(child)
+                    is_closed = self.is_closed(child_state)
                     if not is_opened and not is_closed:
-                        # print('Node is not closed nor open')
-                        child.parent = curr_node
                         child.g = curr_node.g + 1
-                        child.h = 1
-                        # child.h = heuristic(child)
-                        # print("adding to opened list")
+                        child.h = heuristics.calc_heuristic(self.heuristic, self.size, child, self.solution)
+                        print("H : ", curr_node.h)
                         self.add_opened(child)
-                        # print("added : ")
-                        # print(self.opened)
                     else:
-                        # print('Node is closed or open')
                         if (child.g + child.h) > (curr_node.g + 1 + child.h):
                             child.g = curr_node.g + 1
                             child.parent = curr_node
                             if child.state in self.closed:
-                                # print('Node is closed')
                                 self.update_closed_puzzle(child)
-                # print("all opened node :")
-                # for node in self.opened:
-                #     print(node.state)
-            # print("opened : ")
-            # print(self.opened)
         if success:
             print("PATH FOUND !")
-            # print(self.closed)
-            print("nb closed : ", len(self.closed))
-            print(curr_node.state)
+            path = []
+            while curr_node.parent:
+                # print(curr_node.state)
+                path.append(curr_node)
+                curr_node = curr_node.parent
+            path.reverse()
+            for i in (range(len(path))):
+                print(path[i].state)
+            # print(curr_node.state)
+            print("-----------------")
+            print("Nombre de mouvements : ", len(path))
+            print("Nombre de closed : ", len(self.closed))
+            print("Nombre de noeuds ouverts (total) : ", self.count_open)
             return 0
         else:
             print("ERROR: PATH NOT FOUND !")

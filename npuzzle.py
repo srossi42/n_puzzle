@@ -27,6 +27,7 @@ def create_from_file(filename, debug=False, verbose=False):
             # print(line)
             x = 0
             split = line.split("#")
+            # Enlever condition : si puzzle.size = ) raise exception
             if puzzle.size == 0 and len(split) == 1:
                 puzzle.size = int(split[0])
                 puzzle.solution = np.zeros((puzzle.size, puzzle.size), dtype=int)
@@ -71,22 +72,22 @@ def main():
     answer = 0
 
     # Choix de la fonction heuristique
-    # time.sleep(2)
-    # available_answers =  ['1', '2', '3', '4']
-    # while answer not in available_answers:
-    #     # os.system("cls")
-    #     os.system("clear")
-    #     print("Which heuristic function do you want to use?")
-    #     print("     1- Manhattan distance")
-    #     print("     2- Euclidian distance")
-    #     print("     3- Wrong values")
-    #     print("     4- None")
-    #     answer = input("Answer : ")
-    #     if answer not in available_answers:
-    #         print ("Wrong answer, please try again")
-    #         time.sleep(2)
-    # # os.system("cls")
-    # os.system("clear")
+    time.sleep(2)
+    available_answers =  ['1', '2', '3', '4']
+    while answer not in available_answers:
+        # os.system("cls")
+        os.system("clear")
+        print("Which heuristic function do you want to use?")
+        print("     1- Manhattan distance")
+        print("     2- Euclidian distance")
+        print("     3- Wrong values")
+        print("     4- None")
+        answer = input("Answer : ")
+        if answer not in available_answers:
+            print ("Wrong answer, please try again")
+            time.sleep(2)
+    # os.system("cls")
+    os.system("clear")
 
     if arg.f:
         # Ouverture du fichier et creation du puzzle initial
@@ -115,7 +116,8 @@ def main():
     puzzle.print()
     print("Calculating puzzle solution")
     puzzle_solution = puzzle.get_solution()
-
+    puzzle.zero_position = puzzle.get_position(0)
+    print("puzzle.zero_position  : ", puzzle.zero_position)
     if arg.G:
         print("GOD MOD ACTIVATED ! Solution: ")
         print(puzzle_solution)
@@ -123,7 +125,11 @@ def main():
 
     print("[[1 2 3]" + "[8 4 0]" + "[7 6 5]]")
     solver = Solver(first_node=puzzle, debug=arg.d, verbose=arg.v)
-    solution_moves = solver.find_path(answer)
+    try:
+        solution_moves = solver.find_path(answer)
+    except Exception as e:
+        print(e)
+        exit()
 
 if __name__ == '__main__':
     main()

@@ -19,11 +19,21 @@ class Puzzle:
         if parent:
             self.parent = parent
             self.g = parent.g + 1
+            self.size = parent.size
         if verbose:
             self.verbose = verbose
         if debug:
             self.debug = debug
         self.sys = sys
+
+    def __gt__(self, other):
+        return (self.h + self.g) > (other.h + other.g)
+
+    def __lt__(self, other):
+        return (self.h + self.g) < (other.h + other.g)
+
+    def __eq__(self, other):
+        return np.array_equiv(self.state, other.state)
 
     def print(self):
         space_max = len(str(self.size ** 2))
@@ -38,11 +48,11 @@ class Puzzle:
     def get_move_function(self, move):
         if move == "mv_left":
             return {"mv_left": self.move_left}
-        if move == "mv_right":
+        elif move == "mv_right":
             return {"mv_right": self.move_right}
-        if move == "mv_up":
+        elif move == "mv_up":
             return {"mv_up": self.move_up}
-        if move == "mv_down":
+        elif move == "mv_down":
             return {"mv_down": self.move_down}
 
     def get_state(self):
@@ -65,6 +75,7 @@ class Puzzle:
         righter_value = self.state[y, x + 1]
         self.state[y, x + 1] = value
         self.state[y, x] = righter_value
+        # self.zero_position = (y, x+1)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.sys == 'unix':
@@ -88,6 +99,7 @@ class Puzzle:
         lefter_value = self.state[y, x - 1]
         self.state[y, x - 1] = value
         self.state[y, x] = lefter_value
+        # self.zero_position = (y, x-1)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':
@@ -111,6 +123,7 @@ class Puzzle:
         upper_value = self.state[y - 1, x]
         self.state[y - 1, x] = value
         self.state[y, x] = upper_value
+        # self.zero_position = (y - 1, x)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':
@@ -134,6 +147,7 @@ class Puzzle:
         lower_value = self.state[y + 1, x]
         self.state[y + 1, x] = value
         self.state[y, x] = lower_value
+        # self.zero_position = (y + 1, x)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':
@@ -149,7 +163,7 @@ class Puzzle:
             return -1
         if self.debug == 1:
             print("value in get position : ", value)
-            print("self.state :" , self.state)
+            print("self.state :", self.state)
         y = int(np.where(self.state == value)[0])
         x = int(np.where(self.state == value)[1])
         return y, x
