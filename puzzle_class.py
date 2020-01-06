@@ -10,6 +10,7 @@ class Puzzle:
     parent = None
     size = 0
     zero_position = None
+    parent_zero_position = None
     verbose = False
     debug = False
     tempo = 0
@@ -39,7 +40,7 @@ class Puzzle:
         space_max = len(str(self.size ** 2))
         i = 0
         for elem in self.state:
-            if (i % self.size == 0 and i != 0):
+            if i % self.size == 0 and i != 0:
                 print("")
             print( " " * (space_max - len(str(elem))) + str(elem) + " ", end="")
             i += 1
@@ -75,7 +76,7 @@ class Puzzle:
         righter_value = self.state[y, x + 1]
         self.state[y, x + 1] = value
         self.state[y, x] = righter_value
-        # self.zero_position = (y, x+1)
+        self.zero_position = (y, x+1)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.sys == 'unix':
@@ -99,7 +100,7 @@ class Puzzle:
         lefter_value = self.state[y, x - 1]
         self.state[y, x - 1] = value
         self.state[y, x] = lefter_value
-        # self.zero_position = (y, x-1)
+        self.zero_position = (y, x-1)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':
@@ -123,7 +124,7 @@ class Puzzle:
         upper_value = self.state[y - 1, x]
         self.state[y - 1, x] = value
         self.state[y, x] = upper_value
-        # self.zero_position = (y - 1, x)
+        self.zero_position = (y - 1, x)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':
@@ -147,7 +148,7 @@ class Puzzle:
         lower_value = self.state[y + 1, x]
         self.state[y + 1, x] = value
         self.state[y, x] = lower_value
-        # self.zero_position = (y + 1, x)
+        self.zero_position = (y + 1, x)
         if self.verbose == 1:
             time.sleep(self.tempo)
             if self.os == 'unix':

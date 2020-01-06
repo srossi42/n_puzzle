@@ -69,25 +69,25 @@ def main():
     # print("new : ")
     # print (new_puzzle.state)
 
-    answer = 0
+    answer = 1
 
     # Choix de la fonction heuristique
-    time.sleep(2)
-    available_answers =  ['1', '2', '3', '4']
-    while answer not in available_answers:
-        # os.system("cls")
-        os.system("clear")
-        print("Which heuristic function do you want to use?")
-        print("     1- Manhattan distance")
-        print("     2- Euclidian distance")
-        print("     3- Wrong values")
-        print("     4- None")
-        answer = input("Answer : ")
-        if answer not in available_answers:
-            print ("Wrong answer, please try again")
-            time.sleep(2)
-    # os.system("cls")
-    os.system("clear")
+    # time.sleep(2)
+    # available_answers =  ['1', '2', '3', '4']
+    # while answer not in available_answers:
+    #     # os.system("cls")
+    #     os.system("clear")
+    #     print("Which heuristic function do you want to use?")
+    #     print("     1- Manhattan distance")
+    #     print("     2- Euclidian distance")
+    #     print("     3- Wrong values")
+    #     print("     4- None")
+    #     answer = input("Answer : ")
+    #     if answer not in available_answers:
+    #         print ("Wrong answer, please try again")
+    #         time.sleep(2)
+    # # os.system("cls")
+    # os.system("clear")
 
     if arg.f:
         # Ouverture du fichier et creation du puzzle initial

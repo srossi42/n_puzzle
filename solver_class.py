@@ -31,7 +31,6 @@ class Solver:
         if first_node is not None:
             self.size = first_node.size
             self.opened.append(first_node)
-            print(self.opened)
             self.solution = first_node.get_solution()
         else:
             print("Error: node was not provided to solver")
@@ -53,10 +52,11 @@ class Solver:
 
     def add_opened(self, puzzle):
         heappush(self.opened, puzzle)
-        self.count_open += 1
+
 
     def remove_opened(self, puzzle):
         heappop(self.opened)
+        self.count_open += 1
 
     def get_index(self, puzzles_list, puzzle):
         for i in range(0, puzzles_list.lenght()):
@@ -98,13 +98,8 @@ class Solver:
         self.set_heuristic(heuristic_number)
         success = False
         while self.opened is None or len(self.opened) > 0 and not success:
-            # curr_node = self.get_best_opened()
-            # for node in self.opened:
-            #     print("node.h : ", node.h)
-            # if len(self.opened) >= 10:
-            #     exit()
             curr_node = heappop(self.opened)
-            print("chosen node H : ", curr_node.h)
+            self.count_open += 1
             if self.is_final(curr_node.state):
                 success = True
             else:
@@ -112,18 +107,19 @@ class Solver:
                 self.add_closed(curr_node)
                 if curr_node.parent is None:
                     curr_node.h = heuristics.calc_heuristic(self.heuristic, self.size, curr_node, self.solution)
-                    print("H : ", curr_node.h)
+                    # print("H : ", curr_node.h)
                 children_states = curr_node.get_children()
                 for child_state in children_states:
                     child = Puzzle(parent=curr_node)
                     child.state = child_state
                     child.zero_position = child.get_position(0)
+                    child.parent_zero_position = curr_node.get_position(0)
                     is_opened = self.is_opened(child)
                     is_closed = self.is_closed(child_state)
                     if not is_opened and not is_closed:
                         child.g = curr_node.g + 1
                         child.h = heuristics.calc_heuristic(self.heuristic, self.size, child, self.solution)
-                        print("H : ", curr_node.h)
+                        # print("H : ", curr_node.h)
                         self.add_opened(child)
                     else:
                         if (child.g + child.h) > (curr_node.g + 1 + child.h):
@@ -134,18 +130,18 @@ class Solver:
         if success:
             print("PATH FOUND !")
             path = []
-            while curr_node.parent:
-                # print(curr_node.state)
-                path.append(curr_node)
-                curr_node = curr_node.parent
-            path.reverse()
-            for i in (range(len(path))):
-                print(path[i].state)
+            # while curr_node.parent:
+            #     # print(curr_node.state)
+            #     path.append(curr_node)
+            #     curr_node = curr_node.parent
+            # path.reverse()
+            # for i in (range(len(path))):
+            #     print(path[i].state)
             # print(curr_node.state)
             print("-----------------")
             print("Nombre de mouvements : ", len(path))
-            print("Nombre de closed : ", len(self.closed))
-            print("Nombre de noeuds ouverts (total) : ", self.count_open)
+            # print("Nombre de closed : ", len(self.closed))
+            print("Complexity in size : ", self.count_open)
             return 0
         else:
             print("ERROR: PATH NOT FOUND !")
