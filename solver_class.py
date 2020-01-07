@@ -2,6 +2,7 @@ import numpy as np
 from puzzle_class import Puzzle
 import heuristics
 from heapq import heappush, heappop
+from heap_class import Heap
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
@@ -16,12 +17,12 @@ class Solver:
     solution = None
     heuristic = None
     size = 0
-    opened = []
+    opened = Heap()
     closed = []
     closed_sets = set()
     count_open = 0
     nb_opened = 0
-    nb_max_opened = 0
+    states_max = 0
     verbose = False
     debug = False
 
@@ -30,33 +31,28 @@ class Solver:
         print("Solver init...")
         if first_node is not None:
             self.size = first_node.size
-            self.opened.append(first_node)
+            # self.opened.append(first_node)
+            self.opened.push(first_node)
             self.solution = first_node.get_solution()
         else:
             print("Error: node was not provided to solver")
             exit()
 
-    # a suppriemr
-    def is_final(self, state):
-        if np.array_equal(state, self.solution):
-            return True
-        return False
-
     def add_closed(self, puzzle):
         if not self.closed:
-            # self.closed_setstuple(map(tuple, puzzle.state))
             self.closed = [puzzle]
         else:
             self.closed.append(puzzle)
         self.closed_sets.add(tuple(map(tuple, puzzle.state)))
 
-    def add_opened(self, puzzle):
-        heappush(self.opened, puzzle)
-
-
-    def remove_opened(self, puzzle):
-        heappop(self.opened)
-        self.count_open += 1
+    # def add_opened(self, puzzle):
+    #     self.opened.push(puzzle)
+    #     # heappush(self.opened, puzzle)
+    #
+    #
+    # def remove_opened(self, puzzle):
+    #     heappop(self.opened)
+    #     self.count_open += 1
 
     def get_index(self, puzzles_list, puzzle):
         for i in range(0, puzzles_list.lenght()):
@@ -79,8 +75,8 @@ class Solver:
         self.closed[index].g = new_puzzle.g
 
     # a modifier avec les heap
-    def is_opened(self, puzzle):
-        return puzzle in self.opened
+    # def is_opened(self, puzzle):
+    #     return puzzle in self.opened
 
     def is_closed(self, state):
         state_set = tuple(map(tuple, state))
@@ -90,6 +86,10 @@ class Solver:
         self.heuristic = heuristics.get_heuristic(heuristic_number)
         print("heuristic set : ", self.heuristic)
 
+    def set_time_complexity(self):
+        nb_states = self.opened.len() + len(self.closed)
+        if nb_states > self.states_max:
+            self.states_max = nb_states
 
     # A* ALGO
     def find_path(self, heuristic_number=None):
@@ -97,51 +97,50 @@ class Solver:
             raise Exception("Error: heuristic function needs to be specify")
         self.set_heuristic(heuristic_number)
         success = False
-        while self.opened is None or len(self.opened) > 0 and not success:
-            curr_node = heappop(self.opened)
+        while not success and self.opened._heap:
+            curr_node = self.opened.pop()
             self.count_open += 1
-            if self.is_final(curr_node.state):
+            if curr_node.h == 0 and curr_node.parent is not None:
                 success = True
             else:
-                # self.remove_opened(curr_node)
                 self.add_closed(curr_node)
                 if curr_node.parent is None:
-                    curr_node.h = heuristics.calc_heuristic(self.heuristic, self.size, curr_node, self.solution)
-                    # print("H : ", curr_node.h)
+                    curr_node = heuristics.calc_heuristic(self.heuristic, self.size, curr_node, self.solution)
                 children_states = curr_node.get_children()
                 for child_state in children_states:
                     child = Puzzle(parent=curr_node)
                     child.state = child_state
                     child.zero_position = child.get_position(0)
-                    child.parent_zero_position = curr_node.get_position(0)
-                    is_opened = self.is_opened(child)
                     is_closed = self.is_closed(child_state)
-                    if not is_opened and not is_closed:
+                    if child not in self.opened._heap and not is_closed:
                         child.g = curr_node.g + 1
-                        child.h = heuristics.calc_heuristic(self.heuristic, self.size, child, self.solution)
-                        # print("H : ", curr_node.h)
-                        self.add_opened(child)
+                        child = heuristics.calc_heuristic(self.heuristic, self.size, child, self.solution)
+                        self.opened.push(child)
                     else:
                         if (child.g + child.h) > (curr_node.g + 1 + child.h):
                             child.g = curr_node.g + 1
                             child.parent = curr_node
                             if child.state in self.closed:
                                 self.update_closed_puzzle(child)
+            self.set_time_complexity()
         if success:
             print("PATH FOUND !")
             path = []
-            # while curr_node.parent:
-            #     # print(curr_node.state)
-            #     path.append(curr_node)
-            #     curr_node = curr_node.parent
-            # path.reverse()
-            # for i in (range(len(path))):
-            #     print(path[i].state)
-            # print(curr_node.state)
+            while curr_node.parent:
+                # print(curr_node.state)
+                path.append(curr_node)
+                curr_node = curr_node.parent
+            path.reverse()
+            for i in (range(len(path))):
+                print(path[i].state)
+                print()
+
             print("-----------------")
             print("Nombre de mouvements : ", len(path))
+
             # print("Nombre de closed : ", len(self.closed))
-            print("Complexity in size : ", self.count_open)
+            print("Time complexity (Total number of states ever selected in the \"opened\"): ", self.count_open)
+            print("Size complexity (Maximum number of states ever represented in memory at the same time): ", self.states_max)
             return 0
         else:
             print("ERROR: PATH NOT FOUND !")
