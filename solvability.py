@@ -6,17 +6,12 @@ class Solvable:
 
     def __init__(self, puzzle):
         self.size = puzzle.size
-
         self.puzzle = np.reshape(puzzle.state, self.size * self.size)
         self.model = np.reshape(puzzle.get_solution(), self.size * self.size)
-
-        self.zero_position = np.where(self.puzzle == 0)[0]
-        self.size_parity = math.ceil(self.size / 2) % 2
         self.zero_parity = self.find_zero_parity()
         self.inversion_parity = self.find_inversion_parity()
-
-        self.sovable = self.find_solvablility()
-        print("size parity:", self.size_parity, "   zero parity:", self.zero_parity, "   inversion_parity", self.inversion_parity, "     Solvable:", self.sovable)
+        self.sovable = self.zero_parity == self.inversion_parity
+        print("Parité zéro:", self.zero_parity, "   Parité inversion", self.inversion_parity, "     Solvable ?", self.sovable)
 
     # Compte le nombre d'inversions pour trier le tableau (eg. [2,3,1] = 2)
     def find_inversion_parity(self):
@@ -28,19 +23,20 @@ class Solvable:
                 puzzle[index_swap], puzzle[index_swap - 1] = puzzle[index_swap - 1], puzzle[index_swap]
                 index_swap -= 1
                 inversion += 1
-        print("inversion", inversion)
+        print("Nombre d'inversions", inversion)
         return inversion % 2
 
     # Vérifie la position de X sur une ligne pair ou impair en partant de la dernière ligne
     def find_zero_parity(self):
-        print("milieu", math.ceil(self.size / 2))
-        print ("zero position",  math.ceil((self.zero_position + 1) / self.size))
-        return (math.ceil(self.size / 2) -  math.ceil((self.zero_position + 1) / self.size)) % 2
-
-    # Vérifie si le tableau est pair ou impair et les conditions associées (position de X et nbre d'inversions)
-    def find_solvablility(self):
-        if self.size_parity == 1 and self.inversion_parity == 0 :
-            return True
-        elif self.size_parity == 0 and self.inversion_parity != self.zero_parity :
-            return True
-        return False
+        zero_current_position = np.where(self.puzzle == 0)[0] + 1
+        zero_model_position = np.where(self.model == 0)[0] + 1
+        zero_current_line = math.ceil(zero_current_position / self.size)
+        zero_model_line = math.ceil(zero_model_position / self.size)
+        if zero_current_position % self.size == 0:
+            zero_current_col = self.size
+        else :
+            zero_current_col = zero_current_position % self.size
+        zero_model_col = math.fabs(zero_model_position % self.size)
+        move_column = math.fabs(zero_model_col - zero_current_col)
+        move_line = math.fabs(zero_model_line - zero_current_line)
+        return (move_column + move_line) % 2
