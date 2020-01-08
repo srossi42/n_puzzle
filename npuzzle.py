@@ -1,18 +1,14 @@
-
-
 import os
-import time
 import argparse
 import numpy as np
 from puzzle_class import Puzzle
 from solver_class import Solver
-from test import test_movements
 from puzzle_gen import Generator
+import time
 
-
-def create_from_file(filename, debug=False, verbose=False):
+def create_from_file(filename):
     y = 0
-    puzzle = Puzzle(debug=False, verbose=False)
+    puzzle = Puzzle()
     puzzle.state = np.array([], int)
 
     try:
@@ -23,11 +19,8 @@ def create_from_file(filename, debug=False, verbose=False):
     else:
         i = 0
         for line in file:
-            # print("line : ")
-            # print(line)
             x = 0
             split = line.split("#")
-            # Enlever condition : si puzzle.size = ) raise exception
             if puzzle.size == 0 and len(split) == 1:
                 puzzle.size = int(split[0])
                 puzzle.solution = np.zeros((puzzle.size, puzzle.size), dtype=int)
@@ -36,8 +29,6 @@ def create_from_file(filename, debug=False, verbose=False):
                 if len(elems) != puzzle.size:
                     print("Error: your puzzle is not well formated (line " + str(i+1) + ")")
                     exit()
-                # print(elems)
-                # print(puzzle.state)
                 elems_int = []
                 for elem in elems:
                     elems_int.append(int(elem))
@@ -46,54 +37,64 @@ def create_from_file(filename, debug=False, verbose=False):
                     puzzle.state = row_to_be_added
                 else:
                     puzzle.state = np.vstack((puzzle.state, row_to_be_added))
-                # print(puzzle.state)
                 if len(elems) == puzzle.size and puzzle.size != 0:
                     y += 1
             i += 1
-        print("puzzle.state parsé : ")
-        print(puzzle.state)
         return puzzle
+
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', action="store_true", help='Verbose mode')
-    parser.add_argument('-d', action="store_true", help='Debug mode')
-    parser.add_argument("-f", type=str, help="Puzzle file (.txt)")
+    parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
     parser.add_argument("-G",  action="store_true", help="GOD MODE")
-
     arg = parser.parse_args()
 
-    #GENERATION PUZZLE
-    # puzzle_gen = Generator(5, 1000)
-    # new_puzzle = puzzle_gen.generate_puzzle()
-    # print("new : ")
-    # print (new_puzzle.state)
+    algo_choice = 0
 
-    answer = 1
-
-    # Choix de la fonction heuristique
+    # Choix de l'algo
     # time.sleep(2)
-    # available_answers =  ['1', '2', '3', '4']
-    # while answer not in available_answers:
-    #     # os.system("cls")
-    #     os.system("clear")
-    #     print("Which heuristic function do you want to use?")
-    #     print("     1- Manhattan distance")
-    #     print("     2- Euclidian distance")
-    #     print("     3- Wrong values")
-    #     print("     4- None")
-    #     answer = input("Answer : ")
-    #     if answer not in available_answers:
-    #         print ("Wrong answer, please try again")
-    #         time.sleep(2)
-    # # os.system("cls")
-    # os.system("clear")
+    available_answers = [1, 2, 3, 4]
+    while algo_choice not in available_answers:
+        # os.system("cls")
+        os.system("clear")
+        print("Which algorithm do you want to use?")
+        print("     1- Astar")
+        print("     2- Ida")
+        print("     3- Greedy")
+        print("     4- Uniform")
+        algo_choice = int(input("Answer : "))
+        if algo_choice not in available_answers:
+            print("Wrong answer, please try again")
+            time.sleep(2)
+    # os.system("cls")
+    os.system("clear")
 
-    if arg.f:
+
+    heuristic_choice = 0
+
+    #Choix de la fonction heuristique
+    if (algo_choice and algo_choice <= 2):
+        available_answers = [1, 2, 3, 4]
+        while heuristic_choice not in available_answers:
+            # os.system("cls")
+            os.system("clear")
+            print("Which heuristic function do you want to use?")
+            print("     1- Manhattan distance")
+            print("     2- Euclidian distance")
+            print("     3- Wrong values")
+            heuristic_choice = int(input("Answer : "))
+            if heuristic_choice not in available_answers:
+                print ("Wrong answer, please try again")
+                time.sleep(2)
+        # os.system("cls")
+        os.system("clear")
+
+
+
+
+    if arg.filename:
         # Ouverture du fichier et creation du puzzle initial
-        puzzle = create_from_file(arg.f, debug=arg.d, verbose=arg.v)
-        print("")
-        puzzle.print()
+        puzzle = create_from_file(arg.filename)
     else:
         #GENERATION PUZZLE
         size = None
@@ -107,29 +108,35 @@ def main():
             else:
                 print("You are going to generate a puzzle.")
             size = input("Please chose your puzzle size: ")
-            nb_moves = input("Please chose how many moves (from solution to your puzzle): ")
-        puzzle_gen = Generator(int(size), int(nb_moves), debug=arg.d, verbose=arg.v)
+            nb_moves = input("Please chose difficulty (0-19 : Easy / 20-99 : Normal / 100-500 : Hard): ")
+        puzzle_gen = Generator(int(size), int(nb_moves))
         puzzle = puzzle_gen.generate_puzzle()
-        print("You generated this puzzle: ")
-        print(puzzle.state)
-    print("Puzzle : ")
-    puzzle.print()
-    print("Calculating puzzle solution")
-    puzzle_solution = puzzle.get_solution()
-    puzzle.zero_position = puzzle.get_position(0)
-    print("puzzle.zero_position  : ", puzzle.zero_position)
+    print("Puzzle:\n", puzzle.state)
+    try:
+        puzzle_solution = puzzle.get_solution()
+        puzzle.zero_position = puzzle.get_position(0)
+        puzzle.zero_solution_position = np.where(puzzle_solution == 0)
+    except Exception as e:
+        print(e)
+        exit()
     if arg.G:
         print("GOD MOD ACTIVATED ! Solution: ")
         print(puzzle_solution)
         exit()
 
-    print("[[1 2 3]" + "[8 4 0]" + "[7 6 5]]")
-    solver = Solver(first_node=puzzle, debug=arg.d, verbose=arg.v)
+
+    solver = Solver(first_node=puzzle)
     try:
-        solution_moves = solver.find_path(answer)
+        start = time.time()
+        solver.find_path(algo_choice, heuristic_choice)
+        end = time.time()
+        print('Solving time : {:.3f} s'.format(end-start))
+        # print("Duree algo : ", end-start)
+        # solver.astar(heuristic_choice)
     except Exception as e:
         print(e)
         exit()
+
 
 if __name__ == '__main__':
     main()
