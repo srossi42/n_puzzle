@@ -5,8 +5,8 @@ class Heap(object):
     def __init__(self):
         self._heap = []
 
-    def push(self, item):
-        heapq.heappush(self._heap, (item.h + item.g, item))
+    def push(self, item, priority):
+        heapq.heappush(self._heap, (priority, item))
 
     def pop(self):
         if self._heap:

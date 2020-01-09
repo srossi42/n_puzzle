@@ -50,6 +50,7 @@ def main():
     arg = parser.parse_args()
 
     algo_choice = 0
+    heuristic_choice = 0
 
     # Choix de l'algo
     # time.sleep(2)
@@ -59,9 +60,9 @@ def main():
         os.system("clear")
         print("Which algorithm do you want to use?")
         print("     1- Astar")
-        print("     2- Ida")
-        print("     3- Greedy")
-        print("     4- Uniform")
+        print("     2- Greedy")
+        print("     3- Uniform")
+        print("     4- Ida")
         algo_choice = int(input("Answer : "))
         if algo_choice not in available_answers:
             print("Wrong answer, please try again")
@@ -69,11 +70,10 @@ def main():
     # os.system("cls")
     os.system("clear")
 
-
-    heuristic_choice = 0
+    greedy = (algo_choice == 2)
 
     #Choix de la fonction heuristique
-    if (algo_choice and algo_choice <= 2):
+    if (algo_choice and algo_choice != 3):
         available_answers = [1, 2, 3, 4]
         while heuristic_choice not in available_answers:
             # os.system("cls")
@@ -82,6 +82,7 @@ def main():
             print("     1- Manhattan distance")
             print("     2- Euclidian distance")
             print("     3- Wrong values")
+            print("     4- Tchiebichev")
             heuristic_choice = int(input("Answer : "))
             if heuristic_choice not in available_answers:
                 print ("Wrong answer, please try again")
@@ -128,7 +129,10 @@ def main():
     solver = Solver(first_node=puzzle)
     try:
         start = time.time()
-        solver.find_path(algo_choice, heuristic_choice)
+        # print("algo choice : ", algo_choice)
+        # print("heuristic_choice : ", heuristic_choice)
+        # exit()
+        solver.find_path(algo_choice, heuristic_choice, greedy)
         end = time.time()
         print('Solving time : {:.3f} s'.format(end-start))
         # print("Duree algo : ", end-start)

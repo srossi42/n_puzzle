@@ -17,11 +17,6 @@ def manhattan_dist(x1, y1, x2, y2):
 def sq_euclidian_dist(x1, y1, x2, y2):
     return (x2 - x1)**2 + (y2 - y1)**2
 
-
-def uniform(x1, y1, x2, y2):
-    return 0
-
-
 def calc_heuristic(function, size, puzzle, solution):
     # print("test")
     if function == count_bad_values:
@@ -36,7 +31,6 @@ def calc_heuristic(function, size, puzzle, solution):
     else:
         puzzle.h = puzzle.parent.h
         solution_value = np.where(solution == puzzle.parent.state[puzzle.zero_position[0], puzzle.zero_position[1]])
-
         parent_zero = puzzle.parent.zero_position
         solution_zero = puzzle.zero_solution_position
         value = [parent_zero[0], parent_zero[1]]
@@ -55,6 +49,10 @@ def calc_heuristic(function, size, puzzle, solution):
     return puzzle.h
 
 
+
 def get_heuristic(heuristic_number):
-    heuristic_list = [manhattan_dist, sq_euclidian_dist, count_bad_values, uniform]
+    # ajouter tchebietchev
+    if heuristic_number == 0:
+        return manhattan_dist
+    heuristic_list = [manhattan_dist, sq_euclidian_dist, count_bad_values]
     return heuristic_list[int(heuristic_number) - 1]

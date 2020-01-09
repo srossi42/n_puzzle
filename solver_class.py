@@ -3,6 +3,7 @@ from puzzle_class import Puzzle
 import heuristics
 from heapq import heappush, heappop
 from heap_class import Heap
+import time
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
@@ -18,38 +19,20 @@ class Solver:
     heuristic = None
     size = 0
     opened = Heap()
-    closed = []
-    closed_sets = set()
+    closed = {}
     count_open = 0
     nb_opened = 0
     states_max = 0
-    verbose = False
 
 
     # First Node : objet puzzle à l'état initial
     def __init__(self, first_node):
         self.size = first_node.size
-        self.opened.push(first_node)
+        self.opened.push(first_node, (first_node.g + first_node.h))
         self.solution = first_node.get_solution()
 
-
     def add_closed(self, puzzle):
-        if not self.closed:
-            self.closed = [puzzle]
-        else:
-            self.closed.append(puzzle)
-        self.closed_sets.add(tuple(map(tuple, puzzle.state)))
-
-    def get_index(self, puzzles_list, puzzle):
-        for i in range(0, puzzles_list.lenght()):
-            if puzzles_list[i].state == puzzle.state:
-                return i
-        return -1
-
-    def update_closed_puzzle(self, new_puzzle):
-        index = self.get_index(self.closed, new_puzzle)
-        self.closed[index].parent = new_puzzle.parent
-        self.closed[index].g = new_puzzle.g
+        self.closed[puzzle.__hash__()] = puzzle
 
     def set_heuristic(self, heuristic_number):
         self.heuristic = heuristics.get_heuristic(heuristic_number)
@@ -59,21 +42,33 @@ class Solver:
         if nb_states > self.states_max:
             self.states_max = nb_states
 
-    def find_path(self, algo_number, heuristic_number):
-        if algo_number == 1:
-            return self.astar(heuristic_number)
+    def find_path(self, algo_number, heuristic_number, greedy):
+        if algo_number <= 4:
+            return self.astar(heuristic_number, greedy)
+        elif algo_number == 4:
+            print("ida not ready")
+            exit()
+            return self.ida(heuristic_number)
         else:
             raise Exception("Error: algo needs to be ine the list")
 
+
+# Greedy : on choisit une heuristique et osef du g => priority = h
+# Uniform : heuristic == 0 => priority = g
+#
+
     # A* ALGO
-    def astar(self, heuristic_number=None):
-        # print("test")
-        # if heuristic_number is None:
-        #     raise Exception("Error: heuristic function needs to be specify")
+    def astar(self, heuristic_number=None, greedy=False):
+        print("Heuristic number : ", heuristic_number)
+        print("greedy : ", greedy)
         self.set_heuristic(heuristic_number)
         success = False
+        # prevTime = time.time()
         while not success and self.opened._heap:
-            print("open : ", self.count_open)
+            # if (self.count_open % 1000 == 0):
+            #     print(time.time() - prevTime)
+            #     prevTime = time.time()
+            #     print("open : ", self.count_open)
             curr_node = self.opened.pop()
             self.count_open += 1
             if curr_node.h == 0 and curr_node.parent is not None:
@@ -84,21 +79,23 @@ class Solver:
                     curr_node.h = heuristics.calc_heuristic(self.heuristic, self.size, curr_node, self.solution)
                 children_states = curr_node.get_children()
                 for child_state in children_states:
-                    child = Puzzle(parent=curr_node)
-                    child.state = child_state
-                    child.zero_position = child.get_position(0)
-                    is_closed = tuple(map(tuple, child.state)) in self.closed_sets
-                    if child not in self.opened._heap and not is_closed:
+                    hash_state = hash(tuple(map(tuple, child_state)))
+                    if hash_state not in self.closed and hash_state not in self.opened._heap:
+                        child = Puzzle()
+                        child.parent = curr_node
+                        child.size = curr_node.size
+                        child.zero_solution_position = curr_node.zero_solution_position
+                        child.state = child_state
                         child.g = curr_node.g + 1
+                        # child.g = curr_node.g + 1
+                        child.zero_position = child.get_position(0)
                         child.h = heuristics.calc_heuristic(self.heuristic, self.size, child, self.solution)
-                        self.opened.push(child)
-                    else:
-                        if (child.g + child.h) > (curr_node.g + 1 + child.h):
-                            child.g = curr_node.g + 1
-                            child.parent = curr_node
-                            if child.state in self.closed:
-                                self.update_closed_puzzle(child)
-            # print("test4")
+                        if heuristic_number == 0:
+                            priority = child.g
+                        else:
+                            priority = (child.g + child.h, child.h)[greedy]
+                        #  si greedy true : cost uniquement
+                        self.opened.push(child, priority)
             self.set_time_complexity()
         if success:
             print("--------------------------")
@@ -108,12 +105,12 @@ class Solver:
                 # print(curr_node.state)
                 path.append(curr_node)
                 curr_node = curr_node.parent
-            # path.reverse()
-            # print("--------------------------")
-            # for i in (range(len(path))):
-            #     # path[i].print()
-            #     print(path[i].state)
-            #     print()
+            path.reverse()
+            print("--------------------------")
+            for i in (range(len(path))):
+                # path[i].print()
+                print(path[i].state)
+                print()
 
             print("--------------------------")
             print("Number of moves:   ", len(path))
