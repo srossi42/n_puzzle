@@ -42,9 +42,9 @@ class Solver:
         if nb_states > self.states_max:
             self.states_max = nb_states
 
-    def find_path(self, algo_number, heuristic_number, greedy):
+    def find_path(self, algo_number, heuristic_number, greedy, weight):
         if algo_number <= 4:
-            return self.astar(heuristic_number, greedy)
+            return self.astar(heuristic_number, greedy, weight)
         elif algo_number == 4:
             print("ida not ready")
             exit()
@@ -58,7 +58,7 @@ class Solver:
 #
 
     # A* ALGO
-    def astar(self, heuristic_number=None, greedy=False):
+    def astar(self, heuristic_number=None, greedy=False, weight=1):
         print("Heuristic number : ", heuristic_number)
         print("greedy : ", greedy)
         self.set_heuristic(heuristic_number)
@@ -93,7 +93,7 @@ class Solver:
                         if heuristic_number == 0:
                             priority = child.g
                         else:
-                            priority = (child.g + child.h, child.h)[greedy]
+                            priority = ((child.g + child.h * weight), (child.h * weight))[greedy]
                         #  si greedy true : cost uniquement
                         self.opened.push(child, priority)
             self.set_time_complexity()
