@@ -5,6 +5,7 @@ from puzzle_class import Puzzle
 from solver_class import Solver
 from puzzle_gen import Generator
 import time
+import random
 
 def create_from_file(filename):
     y = 0
@@ -54,8 +55,8 @@ def main():
     weight = None
 
     # Choix de l'algo
-    # time.sleep(2)
-    available_answers = [1, 2, 3, 4]
+
+    available_answers = [1, 2, 3]
     while algo_choice not in available_answers:
         # os.system("cls")
         os.system("clear")
@@ -63,7 +64,6 @@ def main():
         print("     1- Astar")
         print("     2- Greedy")
         print("     3- Uniform")
-        print("     4- Ida")
         algo_choice = int(input("Answer : "))
         if algo_choice not in available_answers:
             print("Wrong answer, please try again")
@@ -81,7 +81,7 @@ def main():
             print("Which heuristic function do you want to use?")
             print("     1- Manhattan distance")
             print("     2- Euclidian distance")
-            print("     3- Wrong values")
+            print("     3- Misplaces tiles")
             print("     4- Chebyshev")
             heuristic_choice = int(input("Answer : "))
             if heuristic_choice not in available_answers:
@@ -109,6 +109,8 @@ def main():
                 weight = input("Please enter weight:")
             os.system("clear")
 
+
+
     if arg.filename:
         # Ouverture du fichier et creation du puzzle initial
         puzzle = create_from_file(arg.filename)
@@ -116,19 +118,37 @@ def main():
         #GENERATION PUZZLE
         size = None
         nb_moves = None
+        difficulty = 0
+        available_answers = [1, 2, 3, 4]
         # tant que valeurs size et nb_moves ne sont pas des nombres valides
-        while size is None and nb_moves is None or (not size.isdigit() or not nb_moves.isdigit()) or int(size) == 0:
+        while size is None and difficulty not in available_answers or (not size.isdigit() or int(size) == 0):
             # os.system("cls")
             os.system("clear")
-            if size is not None and nb_moves is not None:
-                print("Try again, you need to enter two positive numbers and size cannot be equal to 0")
-            else:
-                print("You are going to generate a puzzle.")
+            print("You are going to generate a puzzle.")
             size = input("Please chose your puzzle size: ")
-            nb_moves = input("Please chose difficulty (0-19 : Easy / 20-99 : Normal / 100-500 : Hard): ")
-        puzzle_gen = Generator(int(size), int(nb_moves))
+            os.system("clear")
+            print("Chose difficulty of the puzzle (" + str(size) + "*" + str(size) + "): ")
+            print("     1- Easy")
+            print("     2- Normal")
+            print("     3- Hard")
+            print("     4- Extreme")
+
+            difficulty = int(input("Answer: "))
+
+        if difficulty == 1:
+           difficulty = random.randint(10, 49)
+        elif difficulty == 2:
+           difficulty = random.randint(50, 149)
+        elif difficulty == 3:
+           difficulty = random.randint(150, 499)
+        elif difficulty == 4:
+            difficulty = random.randint(500, 2000)
+
+        puzzle_gen = Generator(int(size), difficulty)
         puzzle = puzzle_gen.generate_puzzle()
     print("Puzzle:\n", puzzle.state)
+
+
     try:
         puzzle_solution = puzzle.get_solution()
         puzzle.zero_position = puzzle.get_position(0)
@@ -140,19 +160,12 @@ def main():
         print("GOD MOD ACTIVATED ! Solution: ")
         print(puzzle_solution)
         exit()
-
-
     solver = Solver(first_node=puzzle)
     try:
         start = time.time()
-        # print("algo choice : ", algo_choice)
-        # print("heuristic_choice : ", heuristic_choice)
-        # exit()
         solver.find_path(algo_choice, heuristic_choice, greedy, int(weight))
         end = time.time()
         print('Solving time : {:.3f} s'.format(end-start))
-        # print("Duree algo : ", end-start)
-        # solver.astar(heuristic_choice)
     except Exception as e:
         print(e)
         exit()

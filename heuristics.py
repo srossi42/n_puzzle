@@ -17,8 +17,10 @@ def manhattan_dist(x1, y1, x2, y2):
 def sq_euclidian_dist(x1, y1, x2, y2):
     return (x2 - x1)**2 + (y2 - y1)**2
 
+
 def chebyshev_dist(x1, y1, x2, y2):
     return max((x2 - x1), (y2 - y1))
+
 
 def calc_heuristic(function, size, puzzle, solution):
     # print("test")
@@ -50,7 +52,6 @@ def calc_heuristic(function, size, puzzle, solution):
 
 
     return puzzle.h
-
 
 
 def get_heuristic(heuristic_number):
