@@ -82,7 +82,7 @@ def main():
             print("     1- Manhattan distance")
             print("     2- Euclidian distance")
             print("     3- Wrong values")
-            print("     4- Tchiebichev")
+            print("     4- Chebyshev")
             heuristic_choice = int(input("Answer : "))
             if heuristic_choice not in available_answers:
                 print("Wrong answer, please try again")

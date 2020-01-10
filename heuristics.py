@@ -17,6 +17,9 @@ def manhattan_dist(x1, y1, x2, y2):
 def sq_euclidian_dist(x1, y1, x2, y2):
     return (x2 - x1)**2 + (y2 - y1)**2
 
+def chebyshev(x1, y1, x2, y2):
+    return max((x2 - x1), (y2 - y1))
+
 def calc_heuristic(function, size, puzzle, solution):
     # print("test")
     if function == count_bad_values:
@@ -51,8 +54,7 @@ def calc_heuristic(function, size, puzzle, solution):
 
 
 def get_heuristic(heuristic_number):
-    # ajouter tchebietchev
     if heuristic_number == 0:
         return manhattan_dist
-    heuristic_list = [manhattan_dist, sq_euclidian_dist, count_bad_values]
+    heuristic_list = [manhattan_dist, sq_euclidian_dist, count_bad_values, chebyshev]
     return heuristic_list[int(heuristic_number) - 1]
