@@ -8,7 +8,7 @@ from puzzle_class import Puzzle
 from solver_class import Solver
 from test import test_movements
 from puzzle_gen import Generator
-
+from visu import Visu
 
 def create_from_file(filename, debug=False, verbose=False):
     y = 0
@@ -112,6 +112,9 @@ def main():
         puzzle = puzzle_gen.generate_puzzle()
         print("You generated this puzzle: ")
         print(puzzle.state)
+
+    Visu(puzzle).display()
+
     print("Puzzle : ")
     puzzle.print()
     print("Calculating puzzle solution")
