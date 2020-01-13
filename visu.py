@@ -1,8 +1,7 @@
 import pygame, sys
 import time
-
+from os import path
 class Visu:
-
     grey = (124, 126, 130)
     white = (255, 255, 255)
     size_box = 100
@@ -20,8 +19,10 @@ class Visu:
     prev_state = 0
     done = False
     img = 0
+    flag = 0
+    path_img = 0
 
-    def __init__(self, step_to_solution, solution):
+    def __init__(self, step_to_solution, solution, flag, path_img):
         self.solution = solution
         self.step_to_solution = step_to_solution
         self.size = len(solution)
@@ -31,12 +32,18 @@ class Visu:
         self.width_win = self.puzzle_size + self.side_margin
         self.height_win = self.puzzle_size + self.header + self.footer
         self.window_size = [self.width_win, self.height_win]
+        self.flag = flag
+        self.path_img = path_img
         self.create_screen()
         self.load_img()
 
     def load_img(self):
-        self.img = pygame.image.load("./img2.jpg")
-        self.img = pygame.transform.scale(self.img, (self.puzzle_size, self.puzzle_size))
+        if path.exists(self.path_img):
+            self.img = pygame.image.load(self.path_img)
+            if self.img:
+                self.img = pygame.transform.scale(self.img, (self.puzzle_size, self.puzzle_size))
+        else:
+            print("Oops!  nous n'avons pas pu ouvrir l'image choisie... :")
 
     def gen_img_bg(self):
         for line in range(self.size):
@@ -129,8 +136,10 @@ class Visu:
         self.screen.blit(text, rect)
 
     def display(self):
-        self.gen_img_bg()
-        #self.gen_nbr_bg()
+        if self.flag == 1 and self.img:
+            self.gen_img_bg()
+        else:
+            self.gen_nbr_bg()
         while not self.done:
             for state in self.step_to_solution:
                 if self.prev_state == 0:
@@ -145,6 +154,8 @@ class Visu:
                 if event.type == pygame.QUIT:
                     self.done = True
         pygame.quit()
+
+
 
 npuzzle1 = [[0, 1, 2], [8, 4, 3], [7, 6, 5]]
 npuzzle2 = [[1, 0, 2], [8, 4, 3], [7, 6, 5]]
@@ -161,6 +172,4 @@ if __name__ == "__main__":
     liste.append(npuzzle4)
     liste.append(npuzzle5)
     #liste.append(solution)
-    Visu(liste, solution).display()
-    # pour le mouvement, mettre la box du chiffre a zero pour l'effacer et commencer a la redessiner petit a petit pour la faire avancer
-    # Attention il ne faut plus faire la margin
+    Visu(liste, solution, 0, "./meme.jpg").display()
