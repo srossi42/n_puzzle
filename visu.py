@@ -22,7 +22,7 @@ class Visu:
     flag = 0
     path_img = 0
 
-    def __init__(self, step_to_solution, solution, flag, path_img):
+    def __init__(self, step_to_solution, solution, flag = None, path_img = None):
         self.solution = solution
         self.step_to_solution = step_to_solution
         self.size = len(solution)
@@ -39,9 +39,11 @@ class Visu:
 
     def load_img(self):
         if path.exists(self.path_img):
-            self.img = pygame.image.load(self.path_img)
-            if self.img:
+            try:
+                self.img = pygame.image.load(self.path_img)
                 self.img = pygame.transform.scale(self.img, (self.puzzle_size, self.puzzle_size))
+            except Exception as e:
+                print(e)
         else:
             print("Oops!  nous n'avons pas pu ouvrir l'image choisie... :")
 
