@@ -43,16 +43,43 @@ def create_from_file(filename):
             i += 1
         return puzzle
 
+def display(solution, display_mode):
+    print("--------------------------")
+    print("PATH FOUND !")
+    path = []
+    curr_node = solution.last_node
+    while curr_node.parent:
+        path.append(curr_node)
+        curr_node = curr_node.parent
+    path.reverse()
+    print("--------------------------")
+    for i in (range(len(path))):
+        print(path[i].state)
+        print()
+
+    print("--------------------------")
+    print("Number of moves:   ", len(path))
+    print("Time complexity*:  ", solution.count_open)
+    print("Size complexity**: ", solution.states_max)
+    print("--------------------------")
+    print("*Total number of states ever selected in the \"opened\" stack")
+    print("**Maximum number of states ever represented in memory at the same time")
+    print("--------------------------")
+    print("         GAME OVER")
+    print("--------------------------")
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
     parser.add_argument("-G",  action="store_true", help="GOD MODE")
+    parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
+
     arg = parser.parse_args()
 
     algo_choice = 0
     heuristic_choice = 0
     weight = None
+    display_mode = 0
 
     # Choix de l'algo
 
@@ -163,7 +190,8 @@ def main():
     solver = Solver(first_node=puzzle)
     try:
         start = time.time()
-        solver.find_path(algo_choice, heuristic_choice, greedy, int(weight))
+        solution_path = solver.find_path(algo_choice, heuristic_choice, greedy, int(weight))
+        display(solution_path, display_mode)
         end = time.time()
         print('Solving time : {:.3f} s'.format(end-start))
     except Exception as e:
