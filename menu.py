@@ -1,6 +1,9 @@
 import os
+import re
+import glob
 import time
 import random
+
 
 def chose_algo():
     algo_choice = 0
@@ -19,6 +22,7 @@ def chose_algo():
             algo_choice = int(algo_choice)
     return algo_choice
 
+
 def chose_heuristic():
     heuristic_choice = 0
     available_answers = [1, 2, 3, 4]
@@ -36,6 +40,7 @@ def chose_heuristic():
         else:
             heuristic_choice = int(heuristic_choice)
     return heuristic_choice
+
 
 def chose_weight():
     os.system("clear")
@@ -60,6 +65,7 @@ def chose_weight():
             weight = input("Please enter weight:")
         os.system("clear")
     return int(weight)
+
 
 def chose_difficulty(size):
     difficulty = 0
@@ -87,19 +93,21 @@ def chose_difficulty(size):
         difficulty = random.randint(500, 2000)
     return difficulty
 
+
 def chose_size():
     size = None
     while size is None:
         os.system("clear")
         print("You are going to generate a puzzle.")
-        size = input("Please chose your puzzle size: ")
-        if not size.isdigit() or int(size) == 0:
+        size = input("Please chose your puzzle size (> 1): ")
+        if not size.isdigit() or int(size) <= 1:
             print("Wrong answer, please try again")
             size = None
             time.sleep(2)
         else:
             size = int(size)
     return size
+
 
 def chose_display():
     os.system("clear")
@@ -124,7 +132,7 @@ def chose_display():
             os.system("clear")
             print("Which visualize mode would you like to use?")
             print("     1- Default")
-            print("     2- Puzzle (image)"),
+            print("     2- Puzzle (image)")
             print("     3- Special (image)")
             display_mode = input("Answer : ")
             if not display_mode.isdigit() or int(display_mode) not in available_answers:
@@ -135,3 +143,26 @@ def chose_display():
                 display_mode = int(display_mode)
         os.system("clear")
     return display_mode
+
+
+def chose_img_path():
+    img_choice = 0
+    images_path = "./images/"
+    images_list = glob.glob(images_path + "*.jpg")
+    range_max = len(images_list) + 1
+    regex = re.compile("./images/(.*).jpg")
+    while img_choice not in range(1, range_max):
+        os.system("clear")
+        print("Which image do you want to use?")
+        opt = 1
+        for img in images_list:
+            img_name = regex.findall(img)[0]
+            print("     " + str(opt) + "- " + img_name.title())
+            opt += 1
+        img_choice = input("Answer : ")
+        if not img_choice.isdigit() or int(img_choice) not in range(1, range_max):
+            print("Wrong answer, please try again")
+            time.sleep(2)
+        else:
+            img_choice = int(img_choice)
+    return images_list[img_choice - 1]

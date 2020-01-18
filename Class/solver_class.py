@@ -11,7 +11,6 @@ P  = '\033[35m' # purple
 
 
 class Solver:
-
     solution = None
     heuristic = None
     size = 0
@@ -21,8 +20,6 @@ class Solver:
     nb_opened = 0
     states_max = 0
 
-
-    # First Node : objet puzzle à l'état initial
     def __init__(self, first_node):
         self.size = first_node.size
         self.opened.push(first_node, (first_node.g + first_node.h))
@@ -39,24 +36,16 @@ class Solver:
         if nb_states > self.states_max:
             self.states_max = nb_states
 
-    def find_path(self, algo_number, heuristic_number, greedy, weight):
-        if algo_number <= 4:
-            return self.astar(heuristic_number, greedy, weight)
-        elif algo_number == 4:
-            print("ida not ready")
-            exit()
-            # return self.ida(heuristic_number)
-        else:
-            raise Exception("Error: algo needs to be ine the list")
+    def find_path(self, heuristic_number, greedy, weight):
+        return self.astar(heuristic_number, greedy, weight)
 
-    # A* ALGO
     def astar(self, heuristic_number=None, greedy=False, weight=1):
         self.set_heuristic(heuristic_number)
         success = False
         while not success and self.opened._heap:
             curr_node = self.opened.pop()
             self.count_open += 1
-            if curr_node.h == 0 and curr_node.parent is not None:
+            if curr_node.h == 0 and curr_node.parent:
                 success = True
             else:
                 self.add_closed(curr_node)

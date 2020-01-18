@@ -5,27 +5,26 @@ import numpy as np
 import time
 
 
-def count_bad_values(grid, solution):
+def misplaced_tiles(grid, solution):
     eq_values = np.logical_and(True, grid == solution)
     return len(grid)**2 - np.count_nonzero(eq_values)
 
 
-def manhattan_dist(x1, y1, x2, y2):
+def manhattan(x1, y1, x2, y2):
     return abs(x2 - x1) + abs(y2 - y1)
 
 
-def sq_euclidian_dist(x1, y1, x2, y2):
+def euclidian(x1, y1, x2, y2):
     return (x2 - x1)**2 + (y2 - y1)**2
 
 
-def chebyshev_dist(x1, y1, x2, y2):
+def chebyshev(x1, y1, x2, y2):
     return max((x2 - x1), (y2 - y1))
 
 
 def calc_heuristic(function, size, puzzle, solution):
-    # print("test")
-    if function == count_bad_values:
-        return count_bad_values(puzzle.state, solution)
+    if function == misplaced_tiles:
+        return misplaced_tiles(puzzle.state, solution)
     start = 0 if size < 4 else 1
     if puzzle.parent is None:
         puzzle.h = 0
@@ -56,6 +55,6 @@ def calc_heuristic(function, size, puzzle, solution):
 
 def get_heuristic(heuristic_number):
     if heuristic_number == 0:
-        return manhattan_dist
-    heuristic_list = [manhattan_dist, sq_euclidian_dist, count_bad_values, chebyshev_dist]
+        return manhattan
+    heuristic_list = [manhattan, euclidian, misplaced_tiles, chebyshev]
     return heuristic_list[int(heuristic_number) - 1]

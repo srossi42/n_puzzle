@@ -20,9 +20,6 @@ class Puzzle:
     def __hash__(self):
         return hash(tuple(map(tuple, self.state)))
 
-    # def __eq__(self, other):
-    #     return hash(tuple(map(tuple, self.state))) == hash(tuple(map(tuple, other.state)))
-
     def print(self):
         space_max = len(str(self.size ** 2))
         i = 0
