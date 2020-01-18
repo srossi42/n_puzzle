@@ -68,21 +68,8 @@ def display(solution, display_mode):
     print("         GAME OVER")
     print("--------------------------")
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
-    parser.add_argument("-G",  action="store_true", help="GOD MODE")
-    parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
-
-    arg = parser.parse_args()
-
+def chose_algo():
     algo_choice = 0
-    heuristic_choice = 0
-    weight = None
-    display_mode = 0
-
-    # Choix de l'algo
-
     available_answers = [1, 2, 3]
     while algo_choice not in available_answers:
         # os.system("cls")
@@ -95,51 +82,63 @@ def main():
         if algo_choice not in available_answers:
             print("Wrong answer, please try again")
             time.sleep(2)
-    # os.system("cls")
+    return algo_choice
+
+def chose_heuristic():
+    heuristic_choice = 0
+    available_answers = [1, 2, 3, 4]
+    while heuristic_choice not in available_answers:
+        os.system("clear")
+        print("Which heuristic function do you want to use?")
+        print("     1- Manhattan distance")
+        print("     2- Euclidian distance")
+        print("     3- Misplaces tiles")
+        print("     4- Chebyshev")
+        heuristic_choice = int(input("Answer : "))
+        if heuristic_choice not in available_answers:
+            print("Wrong answer, please try again")
+            time.sleep(2)
+    return heuristic_choice
+
+def chose_weight():
     os.system("clear")
+    add_weight = 0
+    available_answers = [1, 2]
+    while add_weight not in available_answers:
+        os.system("clear")
+        print("Would you like to add some weight to your heuristic?")
+        print("     1- Yes")
+        print("     2- No")
+        add_weight = int(input("Answer : "))
+        if add_weight not in available_answers:
+            print("Wrong answer, please try again")
+            time.sleep(2)
+    os.system("clear")
+    weight = (None, 1)[add_weight == 2]
+    if weight is None:
+        while weight is None or not weight.isdigit():
+            # os.system("cls")
+            os.system("clear")
+            weight = input("Please enter weight:")
+        os.system("clear")
+    return weight
 
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
+    parser.add_argument("-G",  action="store_true", help="GOD MODE")
+    parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
+
+    arg = parser.parse_args()
+    display_mode = 0
+    algo_choice = chose_algo()
     greedy = (algo_choice == 2)
-
-    #Choix de la fonction heuristique
     if (algo_choice and algo_choice != 3):
-        available_answers = [1, 2, 3, 4]
-        while heuristic_choice not in available_answers:
-            os.system("clear")
-            print("Which heuristic function do you want to use?")
-            print("     1- Manhattan distance")
-            print("     2- Euclidian distance")
-            print("     3- Misplaces tiles")
-            print("     4- Chebyshev")
-            heuristic_choice = int(input("Answer : "))
-            if heuristic_choice not in available_answers:
-                print("Wrong answer, please try again")
-                time.sleep(2)
-        os.system("clear")
-        add_weight = 0
-        available_answers = [1, 2]
-        while add_weight not in available_answers:
-            os.system("clear")
-            print("Would you like to add some weight to your heuristic?")
-            print("     1- Yes")
-            print("     2- No")
-            add_weight = int(input("Answer : "))
-            if add_weight not in available_answers:
-                print ("Wrong answer, please try again")
-                time.sleep(2)
-        os.system("clear")
-
-        weight = (None, 1)[add_weight == 2]
-        if weight is None:
-            while weight is None or not weight.isdigit():
-                # os.system("cls")
-                os.system("clear")
-                weight = input("Please enter weight:")
-            os.system("clear")
-
-
+        heuristic_choice = chose_heuristic()
+        weight = chose_weight()
 
     if arg.filename:
-        # Ouverture du fichier et creation du puzzle initial
         puzzle = create_from_file(arg.filename)
     else:
         #GENERATION PUZZLE
