@@ -1,5 +1,5 @@
 import random
-from puzzle_class import Puzzle
+from Class.puzzle_class import Puzzle
 
 
 class Generator:

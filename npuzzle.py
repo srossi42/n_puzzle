@@ -1,11 +1,10 @@
-import os
 import argparse
 import numpy as np
-from puzzle_class import Puzzle
-from solver_class import Solver
+from Class.puzzle_class import Puzzle
+from Class.solver_class import Solver
 from puzzle_gen import Generator
 import time
-import random
+import menu
 
 def create_from_file(filename):
     y = 0
@@ -68,62 +67,6 @@ def display(solution, display_mode):
     print("         GAME OVER")
     print("--------------------------")
 
-def chose_algo():
-    algo_choice = 0
-    available_answers = [1, 2, 3]
-    while algo_choice not in available_answers:
-        # os.system("cls")
-        os.system("clear")
-        print("Which algorithm do you want to use?")
-        print("     1- Astar")
-        print("     2- Greedy")
-        print("     3- Uniform")
-        algo_choice = int(input("Answer : "))
-        if algo_choice not in available_answers:
-            print("Wrong answer, please try again")
-            time.sleep(2)
-    return algo_choice
-
-def chose_heuristic():
-    heuristic_choice = 0
-    available_answers = [1, 2, 3, 4]
-    while heuristic_choice not in available_answers:
-        os.system("clear")
-        print("Which heuristic function do you want to use?")
-        print("     1- Manhattan distance")
-        print("     2- Euclidian distance")
-        print("     3- Misplaces tiles")
-        print("     4- Chebyshev")
-        heuristic_choice = int(input("Answer : "))
-        if heuristic_choice not in available_answers:
-            print("Wrong answer, please try again")
-            time.sleep(2)
-    return heuristic_choice
-
-def chose_weight():
-    os.system("clear")
-    add_weight = 0
-    available_answers = [1, 2]
-    while add_weight not in available_answers:
-        os.system("clear")
-        print("Would you like to add some weight to your heuristic?")
-        print("     1- Yes")
-        print("     2- No")
-        add_weight = int(input("Answer : "))
-        if add_weight not in available_answers:
-            print("Wrong answer, please try again")
-            time.sleep(2)
-    os.system("clear")
-    weight = (None, 1)[add_weight == 2]
-    if weight is None:
-        while weight is None or not weight.isdigit():
-            # os.system("cls")
-            os.system("clear")
-            weight = input("Please enter weight:")
-        os.system("clear")
-    return weight
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
@@ -131,49 +74,28 @@ def main():
     parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
 
     arg = parser.parse_args()
-    display_mode = 0
-    algo_choice = chose_algo()
-    greedy = (algo_choice == 2)
-    if (algo_choice and algo_choice != 3):
-        heuristic_choice = chose_heuristic()
-        weight = chose_weight()
 
+    display_mode = 0
+    heuristic_choice = 0
+    weight = 1
+    algo_choice = menu.chose_algo()
+    greedy = (algo_choice == 2)
+
+
+
+    if algo_choice and algo_choice != 3:
+        heuristic_choice = menu.chose_heuristic()
+        weight = menu.chose_weight()
+    display_mode = menu.chose_display()
     if arg.filename:
         puzzle = create_from_file(arg.filename)
     else:
-        #GENERATION PUZZLE
-        size = None
         nb_moves = None
-        difficulty = 0
-        available_answers = [1, 2, 3, 4]
-        # tant que valeurs size et nb_moves ne sont pas des nombres valides
-        while size is None and difficulty not in available_answers or (not size.isdigit() or int(size) == 0):
-            # os.system("cls")
-            os.system("clear")
-            print("You are going to generate a puzzle.")
-            size = input("Please chose your puzzle size: ")
-            os.system("clear")
-            print("Chose difficulty of the puzzle (" + str(size) + "*" + str(size) + "): ")
-            print("     1- Easy")
-            print("     2- Normal")
-            print("     3- Hard")
-            print("     4- Extreme")
-
-            difficulty = int(input("Answer: "))
-
-        if difficulty == 1:
-           difficulty = random.randint(10, 49)
-        elif difficulty == 2:
-           difficulty = random.randint(50, 149)
-        elif difficulty == 3:
-           difficulty = random.randint(150, 499)
-        elif difficulty == 4:
-            difficulty = random.randint(500, 2000)
-
+        size = menu.chose_size()
+        difficulty = menu.chose_difficulty(size)
         puzzle_gen = Generator(int(size), difficulty)
         puzzle = puzzle_gen.generate_puzzle()
     print("Puzzle:\n", puzzle.state)
-
 
     try:
         puzzle_solution = puzzle.get_solution()
@@ -182,6 +104,7 @@ def main():
     except Exception as e:
         print(e)
         exit()
+
     if arg.G:
         print("GOD MOD ACTIVATED ! Solution: ")
         print(puzzle_solution)

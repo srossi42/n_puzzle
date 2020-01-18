@@ -1,9 +1,6 @@
-import numpy as np
-from puzzle_class import Puzzle
+from Class.puzzle_class import Puzzle
 import heuristics
-from heapq import heappush, heappop
-from heap_class import Heap
-import time
+from Class.heap_class import Heap
 
 W  = '\033[0m'  # white (normal)
 R  = '\033[31m' # red
