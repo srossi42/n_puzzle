@@ -89,13 +89,13 @@ def chose_difficulty(size):
 
 def chose_size():
     size = None
-    available_answers = [1, 2, 3, 4]
-    while size is None or not size.isdigit() or int(size) == 0:
+    while size is None:
         os.system("clear")
         print("You are going to generate a puzzle.")
         size = input("Please chose your puzzle size: ")
-        if not size.isdigit() or int(size) not in available_answers:
+        if not size.isdigit() or int(size) == 0:
             print("Wrong answer, please try again")
+            size = None
             time.sleep(2)
         else:
             size = int(size)
