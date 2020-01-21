@@ -97,7 +97,7 @@ class Visu:
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.done = True
+                pygame.quit()
 
     def find_change(self, new_state):
         value = 0
@@ -162,8 +162,8 @@ class Visu:
                 else:
                     change, move_vert, move_hor = self.find_change(state)
                     self.move(change, move_vert, move_hor)
-            self.step_to_solution = []
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.done = True
+            self.step_to_solution = []
         pygame.quit()

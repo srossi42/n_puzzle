@@ -7,7 +7,7 @@ from puzzle_gen import Generator
 import time
 import menu
 from Class.visu_class import Visu
-
+from Class.solvability_class import Solvability
 
 def create_from_file(filename):
     y = 0
@@ -87,6 +87,7 @@ def main():
     display_mode = 0
     heuristic_choice = 0
     weight = 1
+    
     algo_choice = menu.chose_algo()
     algo_name = get_algo_name(algo_choice)
 
@@ -115,6 +116,7 @@ def main():
     print("Puzzle:\n", puzzle.state)
 
     try:
+        Solvability(puzzle)
         puzzle_solution = puzzle.get_solution()
         puzzle.zero_position = puzzle.get_position(0)
         puzzle.zero_solution_position = np.where(puzzle_solution == 0)
