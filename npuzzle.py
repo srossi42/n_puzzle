@@ -9,6 +9,12 @@ import menu
 from Class.visu_class import Visu
 from Class.solvability_class import Solvability
 
+
+def print_exit(error):
+    print("npuzzle.py: error: ", error)
+    exit()
+
+
 def create_from_file(filename):
     y = 0
     puzzle = Puzzle()
@@ -17,11 +23,9 @@ def create_from_file(filename):
     try:
         file = open(filename, "r")
     except FileNotFoundError as e:
-        print("npuzzle.py: error: ", e)
-        exit()
+        print_exit(e)
     except IsADirectoryError as e:
-        print("npuzzle.py: error: ", e)
-        exit()
+        print_exit(e)
     else:
         i = 0
         for line in file:
@@ -33,8 +37,7 @@ def create_from_file(filename):
             else:
                 elems = split[0].split()
                 if len(elems) != puzzle.size:
-                    print("npuzzle.py: error: your puzzle is not well formated (line " + str(i+1) + ")")
-                    exit()
+                    raise ValueError("Your puzzle is not well formated (line " + str(i+1) + ")")
                 elems_int = []
                 for elem in elems:
                     elems_int.append(int(elem))
@@ -71,6 +74,7 @@ def display(solution, display_mode):
     print("*Total number of states ever selected in the \"opened\" stack")
     print("**Maximum number of states ever represented in memory at the same time")
 
+
 def get_algo_name(algo_choice):
     if algo_choice == 2:
         return "Greddy"
@@ -84,15 +88,16 @@ def main():
     parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
     parser.add_argument("-G",  action="store_true", help="GOD MODE")
     parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
-
     arg = parser.parse_args()
     img_path = ""
     heuristic_choice = 0
     weight = 1
-    
 
     if arg.filename:
-        puzzle = create_from_file(arg.filename)
+        try:
+            puzzle = create_from_file(arg.filename)
+        except ValueError as e:
+            print_exit(e)
     else:
         nb_moves = None
         size = menu.chose_size()
@@ -100,7 +105,6 @@ def main():
         puzzle_gen = Generator(int(size), difficulty)
         puzzle = puzzle_gen.generate_puzzle()
     try:
-        os.system("clear")
         Solvability(puzzle)
         time.sleep(2)
         algo_choice = menu.chose_algo()
@@ -122,8 +126,7 @@ def main():
         puzzle.zero_position = puzzle.get_position(0)
         puzzle.zero_solution_position = np.where(puzzle_solution == 0)
     except Exception as e:
-        print("npuzzle.py: erro: ", e)
-        exit()
+        print_exit(e)
 
     if arg.G:
         print("GOD MOD ACTIVATED ! Solution: ")
@@ -150,8 +153,7 @@ def main():
         print("         GAME OVER")
         print("--------------------------")
     except Exception as e:
-        print(e)
-        exit()
+        print_exit(e)
 
 
 if __name__ == '__main__':

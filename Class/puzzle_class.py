@@ -44,9 +44,6 @@ class Puzzle:
     def get_state(self):
         return self.state
 
-    # movements functions => retourner un nouveau state et l'affecter dans le main a puzzle.state
-    # plutot que de mov direct et sauver dans move_function
-    # get children a modifier aussi ensuite, pas besoin de backup
     def move_right(self, opt=False):
         y = self.zero_position[0]
         x = self.zero_position[1]
@@ -147,10 +144,7 @@ class Puzzle:
         children_list = []
         availables_moves = self.get_available_moves(0)
         for move in availables_moves:
-            # on deplace le 0 => self.state est affecte par le deplacement
             move['function'](True)
-            # si pas de parent ou si le parent est different de l'etat courant on ajoute dans children list
-            # if not self.parent or not np.array_equal(self.state, self.parent.state):
             if not self.parent or not (self.state == self.parent.state).all():
                 children_list.append(self.state)
             self.state = backup_state.copy()

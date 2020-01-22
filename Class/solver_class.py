@@ -75,5 +75,5 @@ class Solver:
             curr_node.last_node = curr_node
             return curr_node
         else:
-            raise Exception("Error: not solvable")
+            raise Exception("npuzzle.py: error: not solvable")
 
