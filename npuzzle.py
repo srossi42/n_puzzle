@@ -17,7 +17,10 @@ def create_from_file(filename):
     try:
         file = open(filename, "r")
     except FileNotFoundError as e:
-        print(e)
+        print("npuzzle.py: error: ", e)
+        exit()
+    except IsADirectoryError as e:
+        print("npuzzle.py: error: ", e)
         exit()
     else:
         i = 0
@@ -30,7 +33,7 @@ def create_from_file(filename):
             else:
                 elems = split[0].split()
                 if len(elems) != puzzle.size:
-                    print("Error: your puzzle is not well formated (line " + str(i+1) + ")")
+                    print("npuzzle.py: error: your puzzle is not well formated (line " + str(i+1) + ")")
                     exit()
                 elems_int = []
                 for elem in elems:
@@ -119,7 +122,7 @@ def main():
         puzzle.zero_position = puzzle.get_position(0)
         puzzle.zero_solution_position = np.where(puzzle_solution == 0)
     except Exception as e:
-        print(e)
+        print("npuzzle.py: erro: ", e)
         exit()
 
     if arg.G:
