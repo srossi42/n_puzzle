@@ -84,25 +84,9 @@ def main():
 
     arg = parser.parse_args()
     img_path = ""
-    display_mode = 0
     heuristic_choice = 0
     weight = 1
     
-    algo_choice = menu.chose_algo()
-    algo_name = get_algo_name(algo_choice)
-
-    greedy = (algo_choice == 2)
-
-
-
-    if algo_choice and algo_choice != 3:
-        heuristic_choice = menu.chose_heuristic()
-        weight = menu.chose_weight()
-        if weight > 1:
-            algo_name += " (weight = " + str(weight) + ")"
-    display_mode = menu.chose_display()
-    if display_mode == 3:
-        img_path = menu.chose_img_path()
 
     if arg.filename:
         puzzle = create_from_file(arg.filename)
@@ -112,11 +96,25 @@ def main():
         difficulty = menu.chose_difficulty(size)
         puzzle_gen = Generator(int(size), difficulty)
         puzzle = puzzle_gen.generate_puzzle()
-    os.system("clear")
-    print("Puzzle:\n", puzzle.state)
-
     try:
+        os.system("clear")
         Solvability(puzzle)
+        time.sleep(2)
+        algo_choice = menu.chose_algo()
+        algo_name = get_algo_name(algo_choice)
+        greedy = (algo_choice == 2)
+
+        if algo_choice and algo_choice != 3:
+            heuristic_choice = menu.chose_heuristic()
+            weight = menu.chose_weight()
+            if weight > 1:
+                algo_name += " (weight = " + str(weight) + ")"
+        display_mode = menu.chose_display()
+        if display_mode == 3:
+            img_path = menu.chose_img_path()
+        os.system("clear")
+        print("Puzzle:\n", puzzle.state)
+        time.sleep(2)
         puzzle_solution = puzzle.get_solution()
         puzzle.zero_position = puzzle.get_position(0)
         puzzle.zero_solution_position = np.where(puzzle_solution == 0)
