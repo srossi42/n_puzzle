@@ -117,7 +117,6 @@ def main():
     try:
         if not arg.default:
             Solvability(puzzle)
-            time.sleep(2)
             algo_choice = menu.chose_algo()
         algo_name = get_algo_name(algo_choice)
         greedy = (algo_choice == 2)
@@ -132,7 +131,6 @@ def main():
             img_path = menu.chose_img_path()
         os.system("clear")
         print("Puzzle:\n", puzzle.state)
-        time.sleep(2)
         puzzle_solution = puzzle.get_solution()
         puzzle.zero_position = puzzle.get_position(0)
         puzzle.zero_solution_position = np.where(puzzle_solution == 0)
