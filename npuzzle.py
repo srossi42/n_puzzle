@@ -4,10 +4,10 @@ import numpy as np
 from Class.puzzle_class import Puzzle
 from Class.solver_class import Solver
 from puzzle_gen import Generator
-import time
-import menu
 from Class.visu_class import Visu
 from Class.solvability_class import Solvability
+import time
+import menu
 
 
 def print_exit(error):
