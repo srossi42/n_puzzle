@@ -87,13 +87,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filename", type=str, help="Puzzle file (.txt)")
     parser.add_argument("-G",  action="store_true", help="GOD MODE")
-    parser.add_argument("-d", "--default", type=str, help="Set default mode: A*/Manhattan/3*3/Normal")
+    parser.add_argument("-d", "--default", action="store_true", help="Set default mode: A*/Manhattan/3*3/Normal")
     arg = parser.parse_args()
     img_path = ""
     heuristic_choice = 0
     weight = 1
 
-    if arg.filename:
+    if arg.default:
+        nb_moves = None
+        size = 3
+        difficulty = 3
+        puzzle_gen = Generator(int(size), difficulty)
+        puzzle = puzzle_gen.generate_puzzle()
+        algo_choice = 1
+        greedy = 0
+        heuristic_choice = 1
+        display_mode = 1
+    elif arg.filename:
         try:
             puzzle = create_from_file(arg.filename)
         except ValueError as e:
@@ -105,18 +115,19 @@ def main():
         puzzle_gen = Generator(int(size), difficulty)
         puzzle = puzzle_gen.generate_puzzle()
     try:
-        Solvability(puzzle)
-        time.sleep(2)
-        algo_choice = menu.chose_algo()
+        if not arg.default:
+            Solvability(puzzle)
+            time.sleep(2)
+            algo_choice = menu.chose_algo()
         algo_name = get_algo_name(algo_choice)
         greedy = (algo_choice == 2)
-
-        if algo_choice and algo_choice != 3:
+        if not arg.default and algo_choice and algo_choice != 3:
             heuristic_choice = menu.chose_heuristic()
             weight = menu.chose_weight()
             if weight > 1:
                 algo_name += " (weight = " + str(weight) + ")"
-        display_mode = menu.chose_display()
+        if not arg.default:
+            display_mode = menu.chose_display()
         if display_mode == 3:
             img_path = menu.chose_img_path()
         os.system("clear")
