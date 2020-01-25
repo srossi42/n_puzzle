@@ -2,7 +2,7 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 from os import path
-
+import numpy as np
 
 class Visu:
     solver = None
@@ -67,7 +67,7 @@ class Visu:
                 y = column * self.size_box
                 value = self.solution[line][column]
                 bg = pygame.Surface((self.size_box, self.size_box))
-                bg.blit(self.img, (0, 0), (y, x, 100, 100))
+                bg.blit(self.img, (0, 0), (y, x, self.size_box, self.size_box))
                 self.box_bg_list[value] = bg
 
     def gen_nbr_bg(self):
@@ -164,6 +164,9 @@ class Visu:
                 else:
                     change, move_vert, move_hor = self.find_change(state)
                     self.move(change, move_vert, move_hor)
+                if np.array_equal(state, self.solution):
+                    pygame.mixer.music.load("./victory.mp3")
+                    pygame.mixer.music.play()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.done = True
