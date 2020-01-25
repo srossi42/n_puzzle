@@ -77,7 +77,7 @@ def display(solution, display_mode):
 
 def get_algo_name(algo_choice):
     if algo_choice == 2:
-        return "Greddy"
+        return "Greedy"
     elif algo_choice == 3:
         return "Uniform"
     return "A* Star"
