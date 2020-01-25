@@ -1,7 +1,6 @@
-import fileinput
 import numpy as np
 import math as math
-from .puzzle_class import Puzzle
+
 
 class Solvability:
     def __init__(self, puzzle):
@@ -15,9 +14,10 @@ class Solvability:
             raise Exception("Puzzle already solved... Nice try!")
         self.zero_parity = self.find_zero_parity()
         self.inversion_parity = self.find_inversion_parity()
-        self.sovable = self.zero_parity == self.inversion_parity
-        if not self.sovable :
-            raise Exception("Puzzle isn't solvable:   Zero parity: " + str(self.zero_parity)  + "   Inversion parity: " + str(self.inversion_parity))
+        self.solvable = self.zero_parity == self.inversion_parity
+        if not self.solvable:
+            raise Exception("Puzzle isn't solvable:   Zero parity: " + str(self.zero_parity) + "   Inversion parity: "
+                            + str(self.inversion_parity))
         else:
             puzzle.state = backup_state.copy()
 

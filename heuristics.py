@@ -1,8 +1,4 @@
-#!/Users/srossi/Documents/venv/bin/python3.7
-# -*- coding: utf-8 -*-
-
 import numpy as np
-import time
 
 
 def misplaced_tiles(grid, solution):
@@ -44,12 +40,8 @@ def calc_heuristic(function, size, puzzle, solution):
         if size < 4:
             puzzle.h += function(curr_zero[0], curr_zero[1], solution_zero[0][0], solution_zero[1][0]) - \
                         function(parent_zero[0], parent_zero[1], solution_zero[0][0], solution_zero[1][0])
-
-
         puzzle.h += function(curr_value[0][0], curr_value[1][0], solution_value[0][0], solution_value[1][0]) - \
                     function(parent_value[0][0], parent_value[1][0], solution_value[0][0], solution_value[1][0])
-
-
     return puzzle.h
 
 
