@@ -92,18 +92,18 @@ def main():
     img_path = ""
     heuristic_choice = 0
     weight = 1
-
     if arg.default:
         nb_moves = None
-        size = 3
-        difficulty = 3
-        puzzle_gen = Generator(int(size), difficulty)
-        puzzle = puzzle_gen.generate_puzzle()
+        if not arg.filename:
+            size = 3
+            difficulty = 100
+            puzzle_gen = Generator(int(size), difficulty)
+            puzzle = puzzle_gen.generate_puzzle()
         algo_choice = 1
         greedy = 0
         heuristic_choice = 1
         display_mode = 1
-    elif arg.filename:
+    if arg.filename:
         try:
             puzzle = create_from_file(arg.filename)
         except ValueError as e:
